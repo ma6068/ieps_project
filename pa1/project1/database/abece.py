@@ -6,3 +6,4 @@ a.connectDB()
 a.createTables()
 a.insertSite('dsadasd', 'ime na fajlot', 'sodrzina')
 
+

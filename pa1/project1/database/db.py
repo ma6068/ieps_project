@@ -23,6 +23,8 @@ class DB:
     def disconnectDB(self):
         if self.conn:
             self.conn.close()
+        if self.cur:
+            self.cur.close()
 
     def createTables(self):
         code = open("crawldb.sql", "r").read()
@@ -57,14 +59,46 @@ class DB:
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
 
+    def insertPageData(self, page_id=None, data_type_code=None, data=None):
+        sql = "INSERT INTO crawldb.page_data(page_id, data_type_code, data) VALUES (%s, %s, %s)"
+        values = (page_id, data_type_code, data)
+        try:
+            self.cur.execute(sql, values)
+            self.conn.commit()
+        except psycopg2.IntegrityError as error:
+            raise error
+        except (Exception, psycopg2.DatabaseError):
+            self.conn.rollback()
 
+    def insertLink(self, from_page, to_page):
+        sql = "INSERT INTO crawldb.link(from_page, to_page) VALUES (%s, %s)"
+        values = (from_page, to_page)
+        try:
+            self.cur.execute(sql, values)
+            self.conn.commit()
+        except psycopg2.IntegrityError as error:
+            raise error
+        except (Exception, psycopg2.DatabaseError):
+            self.conn.rollback()
 
-    '''
     def insertPage(self, site_id=None, page_type_code=None, url=None, html_content=None, http_status_code=None,
                    accessed_time=None):
-        if page_type_code == 'HTML':
-            sql = "INSERT INTO page(site_id, page_type_code, url, html_content, http_status_code, accessed_time) " \
+        if not page_type_code == 'DUPLICATE':
+            sql = "INSERT INTO crawldb.page" \
+                  "(site_id, page_type_code, url, html_content, http_status_code, accessed_time) " \
                   "VALUES (%s, %s, %s, %s, %s, %s)"
             values = (site_id, page_type_code, url, html_content, http_status_code, accessed_time)
         else:
-    '''
+            sql = "INSERT INTO crawldb.page" \
+                  "(site_id, page_type_code, url, http_status_code, accessed_time)" \
+                  "VALUES (%s, %s, %s, %s, %s)"
+            values = (site_id, page_type_code, url, http_status_code, accessed_time)
+        try:
+            self.cur.execute(sql, values)
+            self.conn.commit()
+        except psycopg2.IntegrityError as error:
+            raise error
+        except (Exception, psycopg2.DatabaseError):
+            self.conn.rollback()
+
+    # ------------------------------  SELECT FUNCTIONS  ------------------------------

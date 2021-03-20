@@ -94,3 +94,4 @@ INSERT INTO crawldb.page_type VALUES
 	('BINARY'),
 	('DUPLICATE'),
 	('FRONTIER');
+
