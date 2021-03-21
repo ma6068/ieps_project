@@ -37,7 +37,7 @@ class DB:
     # ------------------------------  INSERT FUNCTIONS  ------------------------------
 
     def insertSite(self, domain=None, robots_content=None, sitemap_content=None):
-        sql = "INSERT INTO crawldb.site(domain, robots_content, sitemap_content) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO crawldb.site(domain, robots_content, sitemap_content) VALUES (%s, %s, %s) RETURNING id"
         values = (domain, robots_content, sitemap_content)
         try:
             self.cur.execute(sql, values)
@@ -49,7 +49,7 @@ class DB:
 
     def insertImage(self, page_id=None, filename=None, content_type=None, data=None, accessed_time=None):
         sql = "INSERT INTO crawldb.image(page_id, filename, content_type, data, accessed_time) " \
-              "VALUES (%s, %s, %s, %s, %s)"
+              "VALUES (%s, %s, %s, %s, %s) RETURNING id"
         values = (page_id, filename, content_type, data, accessed_time)
         try:
             self.cur.execute(sql, values)
@@ -85,13 +85,13 @@ class DB:
                    accessed_time=None):
         if not page_type_code == 'DUPLICATE':
             sql = "INSERT INTO crawldb.page" \
-                  "(site_id, page_type_code, url, html_content, http_status_code, accessed_time) " \
-                  "VALUES (%s, %s, %s, %s, %s, %s)"
+                  "(site_id, page_type_code, url, html_content, http_status_code, accessed_time)" \
+                  "VALUES (%s, %s, %s, %s, %s, %s) RETURNING id"
             values = (site_id, page_type_code, url, html_content, http_status_code, accessed_time)
         else:
             sql = "INSERT INTO crawldb.page" \
                   "(site_id, page_type_code, url, http_status_code, accessed_time)" \
-                  "VALUES (%s, %s, %s, %s, %s)"
+                  "VALUES (%s, %s, %s, %s, %s) RETURNING id"
             values = (site_id, page_type_code, url, http_status_code, accessed_time)
         try:
             self.cur.execute(sql, values)
@@ -102,3 +102,16 @@ class DB:
             self.conn.rollback()
 
     # ------------------------------  SELECT FUNCTIONS  ------------------------------
+    def getPageByDomain(self, domain=None):
+        sql = "SELECT id FROM crawldb.site WHERE domain = %s"
+        values = (domain, )
+        try:
+            self.cur.execute(sql, values)
+            result = self.cur.fetchone()
+            if result:
+                return result
+        except psycopg2.IntegrityError as error:
+            raise error
+        except (Exception, psycopg2.DatabaseError):
+            self.conn.rollback()
+        return None
