@@ -4,6 +4,8 @@ a = db.DB()
 
 a.connectDB()
 a.createTables()
-a.insertSite('dsadasd', 'ime na fajlot', 'sodrzina')
-
+value = a.insertSite('dsadasd', 'ime na fajlot', 'sodrzina')
+print(value)
+value2 = a.insertPage(value, 'HTML', 'fsdfds', 'dasdada', '200', None)
+print(value2)
 
