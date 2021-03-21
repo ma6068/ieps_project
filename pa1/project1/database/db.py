@@ -27,7 +27,7 @@ class DB:
             self.cur.close()
 
     def createTables(self):
-        code = open("crawldb.sql", "r").read()
+        code = open("database/crawldb.sql", "r").read()
         try:
             self.cur.execute(code)
             self.conn.commit()
@@ -111,7 +111,7 @@ class DB:
             self.conn.rollback()
 
     # ------------------------------  SELECT FUNCTIONS  ------------------------------
-    def getPageByDomain(self, domain=None):
+    def getSiteByDomain(self, domain=None):
         sql = "SELECT id FROM crawldb.site WHERE domain = %s"
         values = (domain, )
         try:

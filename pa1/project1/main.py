@@ -1,8 +1,13 @@
 import urllib.request
+import database.db as database
 from bs4 import BeautifulSoup
 from frontier import Frontier
 from urllib.error import HTTPError
 from urllib.parse import urlparse
+
+db = database.DB()
+db.connectDB()
+db.createTables()
 
 pictures = []
 
@@ -33,7 +38,24 @@ while currentPageLink != None:
 
     domain = urlparse(currentPageLink).netloc # dava primer www.gov.si -> mora https://......../pomoc/
     print('DOMAIN: ' + domain)
+
     ############ tuka treba da proverime dali go ima domain vo bazata, ako ne go dodavame ############
+    siteID = db.getSiteByDomain(domain)
+    if siteID == None:
+        siteID = db.insertSite(domain, 'robots', 'sitemap')
+
+    ############ ako e duplikat vrati go originalo (hashmap), ako ne togas vrati nov #################
+    ############ pageID = db.getPageByURL() if page exists: true, else: false #######
+    # hashmapFunkcija -> ako e vo bazata true, ako ne false
+    # ako e vo bazata getSiteByDomain() vrakja -> None, ako ne napravi ID nov i vrati go.
+    ############ povikuvame insertPage(), funkcijata proveruva so hashmap dali e vnatre stranata #####
+    ############ ako e vnatre vo databaza ja ima page (duplikat), vrati None #############
+    ############ ako ja nema stranata togas vrati novio ID #############
+    pageID = db.insertPage(siteID, 'HTML', currentPageLink, 'dasdada', '200', None)
+    #if pageID == None:
+    #    print('note: this page is a duplicate, skip it.')
+    #    currentPageLink = fr.getUrl()
+    #    continue
 
     linkovi = soup.find_all('a', href=True)
     sliki = soup.find_all('img', src=True)
