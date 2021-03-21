@@ -113,7 +113,21 @@ class DB:
     # ------------------------------  SELECT FUNCTIONS  ------------------------------
     def getSiteByDomain(self, domain=None):
         sql = "SELECT id FROM crawldb.site WHERE domain = %s"
-        values = (domain, )
+        values = (domain,)
+        try:
+            self.cur.execute(sql, values)
+            result = self.cur.fetchone()
+            if result:
+                return result
+        except psycopg2.IntegrityError as error:
+            raise error
+        except (Exception, psycopg2.DatabaseError):
+            self.conn.rollback()
+        return None
+
+    def getPageByHash(self, html_hash=None):
+        sql = "SELECT id FROM crawldb.page WHERE html_hash = %s"
+        values = (html_hash, )
         try:
             self.cur.execute(sql, values)
             result = self.cur.fetchone()

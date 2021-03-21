@@ -82,5 +82,3 @@ while currentPageLink != None:
 
 # tuka treba eden while, koj ce povikuva pajak da odi niz sekoja strana (dodeka ima strani)
 # vnatre vo toj while se nadolu so ima treba da se napisi za ovie raboti konstantno da se povikuva
-
-

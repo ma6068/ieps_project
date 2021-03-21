@@ -95,3 +95,8 @@ INSERT INTO crawldb.page_type VALUES
 	('DUPLICATE'),
 	('FRONTIER');
 
+
+ALTER TABLE crawldb.page ADD html_hash varchar(3000)   UNIQUE;
+
+CREATE INDEX IF NOT EXISTS  "idx_html_hash" ON crawldb.page ( html_hash );
+
