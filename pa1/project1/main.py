@@ -1,4 +1,9 @@
+import hashlib
 import urllib.request
+from datetime import datetime
+
+from pip._vendor import requests
+
 import database.db as database
 import urllib.robotparser
 from bs4 import BeautifulSoup
@@ -21,10 +26,10 @@ fr.addUrl('https://e-prostor.gov.si/')
 currentPageLink = fr.getUrl()
 
 while currentPageLink != None:
-    print(currentPageLink)
 
     try:
         f = urllib.request.urlopen(currentPageLink)
+        htmlStatusCode = f.getcode()
     except HTTPError:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
@@ -35,14 +40,17 @@ while currentPageLink != None:
     # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
     currentPageLink = f.url
     page = f.read().decode('utf-8')
-    soup = BeautifulSoup(page, 'html5lib')
+    soup = BeautifulSoup(page)
 
     domain = urlparse(currentPageLink).netloc # dava primer www.gov.si -> mora https://......../pomoc/
     print('DOMAIN: ' + domain)
+    if ".gov.si" not in domain:
+        currentPageLink = fr.getUrl()
+        continue
 
     ############ tuka treba da proverime dali go ima domain vo bazata, ako ne go dodavame ############
     siteID = db.getSiteByDomain(domain)
-    if siteID == None:
+    if siteID is None:
         # we have to read the domain's robots.txt if the site is  not yet created in our database
         robotURL = 'https://' + domain + '/robots.txt'
         robotFile = urllib.robotparser.RobotFileParser()
@@ -53,28 +61,28 @@ while currentPageLink != None:
             robotFile.read()
             if robotFile.default_entry:
                 robotText = str(robotFile.default_entry)
-            ############################ site_maps() does not work ###################################
-            #if robotFile.site_maps():
-            #    siteText = "\n".join(robotFile.site_maps())
-            #print('SITE: ' + siteText)
+            if robotFile.site_maps():
+                siteText = str("\n".join(robotFile.site_maps()))
         except Exception as exc:
             print('EXCEPTION WHILE CREATING: ')
             print(exc)
 
         siteID = db.insertSite(domain, robotText, siteText)
 
-    ############ ako e duplikat vrati go originalo (hashmap), ako ne togas vrati nov #################
-    ############ pageID = db.getPageByURL() if page exists: true, else: false #######
-    # hashmapFunkcija -> ako e vo bazata true, ako ne false
-    # ako e vo bazata getSiteByDomain() vrakja -> None, ako ne napravi ID nov i vrati go.
-    ############ povikuvame insertPage(), funkcijata proveruva so hashmap dali e vnatre stranata #####
-    ############ ako e vnatre vo databaza ja ima page (duplikat), vrati None #############
-    ############ ako ja nema stranata togas vrati novio ID #############
-    #pageID = db.insertPage(siteID, 'HTML', currentPageLink, 'dasdada', '200', None)
-    #if pageID == None:
-    #    print('note: this page is a duplicate, skip it.')
-    #    currentPageLink = fr.getUrl()
-    #    continue
+    html_content = requests.get(currentPageLink).text
+    hash_object = hashlib.sha256(html_content.encode())
+    html_hash = hash_object.hexdigest()
+
+    pageIDByHash = db.getPageByHash(html_hash)
+    if pageIDByHash is None:
+        ##################### smeni page content #####################
+        pageID = db.insertPage(siteID, 'HTML', currentPageLink, html_content, htmlStatusCode, datetime.now(), html_hash)
+    else:
+        ###################### smeni status code #####################
+        pageID = db.insertPage(siteID, 'DUPLICATE', None, html_content, htmlStatusCode, datetime.now(), html_hash)
+        db.insertLink(pageIDByHash, pageID)
+        currentPageLink = fr.getUrl()
+        continue
 
     linkovi = soup.find_all('a', href=True)
     sliki = soup.find_all('img', src=True)

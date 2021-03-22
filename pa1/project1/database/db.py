@@ -66,12 +66,12 @@ class DB:
         return None
 
     def insertPage(self, site_id=None, page_type_code=None, url=None, html_content=None, http_status_code=None,
-                   accessed_time=None):
+                   accessed_time=None, html_hash=None):
         if not page_type_code == 'DUPLICATE':
             sql = "INSERT INTO crawldb.page" \
-                  "(site_id, page_type_code, url, html_content, http_status_code, accessed_time)" \
-                  "VALUES (%s, %s, %s, %s, %s, %s) RETURNING id"
-            values = (site_id, page_type_code, url, html_content, http_status_code, accessed_time)
+                  "(site_id, page_type_code, url, html_content, http_status_code, accessed_time, html_hash)" \
+                  "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id"
+            values = (site_id, page_type_code, url, html_content, http_status_code, accessed_time, html_hash)
         else:
             sql = "INSERT INTO crawldb.page" \
                   "(site_id, page_type_code, url, http_status_code, accessed_time)" \
