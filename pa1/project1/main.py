@@ -1,5 +1,6 @@
 import urllib.request
 import database.db as database
+import urllib.robotparser
 from bs4 import BeautifulSoup
 from frontier import Frontier
 from urllib.error import HTTPError
@@ -42,7 +43,25 @@ while currentPageLink != None:
     ############ tuka treba da proverime dali go ima domain vo bazata, ako ne go dodavame ############
     siteID = db.getSiteByDomain(domain)
     if siteID == None:
-        siteID = db.insertSite(domain, 'robots', 'sitemap')
+        # we have to read the domain's robots.txt if the site is  not yet created in our database
+        robotURL = 'https://' + domain + '/robots.txt'
+        robotFile = urllib.robotparser.RobotFileParser()
+        robotFile.set_url(robotURL)
+        robotText = None
+        siteText = None
+        try:
+            robotFile.read()
+            if robotFile.default_entry:
+                robotText = str(robotFile.default_entry)
+            ############################ site_maps() does not work ###################################
+            #if robotFile.site_maps():
+            #    siteText = "\n".join(robotFile.site_maps())
+            #print('SITE: ' + siteText)
+        except Exception as exc:
+            print('EXCEPTION WHILE CREATING: ')
+            print(exc)
+
+        siteID = db.insertSite(domain, robotText, siteText)
 
     ############ ako e duplikat vrati go originalo (hashmap), ako ne togas vrati nov #################
     ############ pageID = db.getPageByURL() if page exists: true, else: false #######
@@ -51,7 +70,7 @@ while currentPageLink != None:
     ############ povikuvame insertPage(), funkcijata proveruva so hashmap dali e vnatre stranata #####
     ############ ako e vnatre vo databaza ja ima page (duplikat), vrati None #############
     ############ ako ja nema stranata togas vrati novio ID #############
-    pageID = db.insertPage(siteID, 'HTML', currentPageLink, 'dasdada', '200', None)
+    #pageID = db.insertPage(siteID, 'HTML', currentPageLink, 'dasdada', '200', None)
     #if pageID == None:
     #    print('note: this page is a duplicate, skip it.')
     #    currentPageLink = fr.getUrl()
