@@ -1,9 +1,7 @@
 import hashlib
-import urllib.request
+from urllib.request import urlopen, Request
 from datetime import datetime
-
 from pip._vendor import requests
-
 from url_normalize import url_normalize
 import database.db as database
 import urllib.robotparser
@@ -15,8 +13,8 @@ from urllib.parse import urlparse, urlsplit, urljoin
 
 def canonicalUrl(url):
     splited =  '{uri.scheme}://{uri.netloc}/'.format(uri=urlsplit(url))
-
     return url_normalize(urljoin(splited, url))
+
 
 db = database.DB()
 db.connectDB()
@@ -32,16 +30,16 @@ fr.addUrl('https://e-prostor.gov.si/')
 
 currentPageLink = fr.getUrl()
 
-while currentPageLink != None:
-    print(currentPageLink)
-    ############## dali e stranata ista po url so nekoja druga? ###########################
+while currentPageLink is not None:
+    # ovoj url veke go imame vo bazata => zemi nareden
     if db.getPageByUrl(canonicalUrl(currentPageLink)) is not None:
         currentPageLink = fr.getUrl()
         continue
 
     try:
-        f = urllib.request.urlopen(currentPageLink, timeout=10)
+        f = urlopen(Request(currentPageLink, headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
         htmlStatusCode = f.getcode()
+        print(htmlStatusCode)
     except HTTPError:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
