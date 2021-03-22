@@ -1,0 +1,121 @@
+1616422025553	geckodriver	INFO	Listening on 127.0.0.1:49399
+1616422028664	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileWQzoCS"
+1616422028992	geckodriver::marionette	DEBUG	Waiting 60s to connect to browser on 127.0.0.1:49411
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616422344208	geckodriver	INFO	Listening on 127.0.0.1:49547
+1616422347284	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofile0wwqZW"
+1616422347356	geckodriver::marionette	DEBUG	Waiting 60s to connect to browser on 127.0.0.1:49556
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616422412390	geckodriver	INFO	Listening on 127.0.0.1:49607
+1616422415480	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofile3y0gYK"
+1616422415502	geckodriver::marionette	DEBUG	Waiting 60s to connect to browser on 127.0.0.1:49616
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616422426841	geckodriver	INFO	Listening on 127.0.0.1:49625
+1616422429859	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileqiH8vW"
+1616422429859	geckodriver::marionette	DEBUG	Waiting 60s to connect to browser on 127.0.0.1:49634
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+[Child 35932] WARNING: pipe error: 109: file c:/builds/moz2_slave/m-rel-w32-00000000000000000000/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 343
+JavaScript error: chrome://global/content/backgroundPageThumbsContent.js, line 59: TypeError: docShell is null
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x48010C,name=PContent::Msg_AsyncMessage) Channel closing: too late to send/recv, messages will be lost
+
+JavaScript error: chrome://global/content/process-content.js, line 30: NS_ERROR_UNEXPECTED: Component returned failure code: 0x8000ffff (NS_ERROR_UNEXPECTED) [nsIMessageSender.sendAsyncMessage]
+1616422474158	webdriver::server	DEBUG	<- 500 Internal Server Error {"value":{"error":"unknown error","message":"Process unexpectedly closed with status 0","stacktrace":""}}
+1616425091007	geckodriver	INFO	Listening on 127.0.0.1:51803
+1616425093907	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilejCMwjj"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616425244795	geckodriver	INFO	Listening on 127.0.0.1:51912
+1616425247782	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilev2RNJS"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616425529916	geckodriver	INFO	Listening on 127.0.0.1:52291
+1616425532881	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileZKtAPM"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616425555487	geckodriver	INFO	Listening on 127.0.0.1:52322
+1616425558464	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilekLpP6g"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616425805757	geckodriver	INFO	Listening on 127.0.0.1:52484
+1616425808835	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileW6nqvw"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616425943489	geckodriver	INFO	Listening on 127.0.0.1:52605
+1616425946418	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofile04572L"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616426260171	geckodriver	INFO	Listening on 127.0.0.1:52839
+1616426263176	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileZc2xOs"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616427129635	geckodriver	INFO	Listening on 127.0.0.1:53340
+1616427132644	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileyAjMOP"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616427348091	geckodriver	INFO	Listening on 127.0.0.1:53499
+1616427351047	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilebwV9pG"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+[Child 31048] ###!!! ABORT: Aborting on channel error.: file c:/builds/moz2_slave/m-rel-w32-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2046
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xF60005,name=PTexture::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xF60005,name=PTexture::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x420003,name=PCompositable::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xF60005,name=PTexture::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xF60005,name=PTexture::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x420003,name=PCompositable::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xF60005,name=PTexture::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xF60005,name=PTexture::Msg_Destroy) Channel error: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x420003,name=PCompositable::Msg_Destroy) Channel error: cannot send/recv
+
+1616427563717	geckodriver	INFO	Listening on 127.0.0.1:53652
+1616427566727	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilep9U10k"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616427960375	geckodriver	INFO	Listening on 127.0.0.1:50986
+1616427963485	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilev6iGUL"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616428092434	geckodriver	INFO	Listening on 127.0.0.1:51144
+1616428095438	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilebfpuwD"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+[Child 22676] ###!!! ABORT: Aborting on channel error.: file c:/builds/moz2_slave/m-rel-w32-00000000000000000000/build/src/ipc/glue/MessageChannel.cpp, line 2046
+1616428201050	geckodriver	INFO	Listening on 127.0.0.1:51344
+1616428204076	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofile1yvnFp"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616428304376	geckodriver	INFO	Listening on 127.0.0.1:51532
+1616428307405	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofile2uFF6g"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+JavaScript error: https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/build/common-min.99a131b5edfa.js, line 1: TypeError: navToggle.forEach is not a function
+1616428484787	geckodriver	INFO	Listening on 127.0.0.1:51795
+1616428487973	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileDVdeUN"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616428528802	geckodriver	INFO	Listening on 127.0.0.1:51864
+1616428532029	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileMtSLrI"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616428690381	geckodriver	INFO	Listening on 127.0.0.1:52322
+1616428693451	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofileqV57h9"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0
+1616429090984	geckodriver	INFO	Listening on 127.0.0.1:52925
+1616429094008	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\UserPC\\AppData\\Local\\Temp\\rust_mozprofilealE9vA"
+[GFX1]: Potential driver version mismatch ignored due to missing DLLs 0.0.0.0 and 0.0.0.0

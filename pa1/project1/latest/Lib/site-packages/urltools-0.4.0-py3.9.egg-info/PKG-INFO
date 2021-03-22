@@ -1,0 +1,11 @@
+Metadata-Version: 1.1
+Name: urltools
+Version: 0.4.0
+Summary: Some functions to parse and normalize URLs.
+Home-page: https://github.com/itzik-h/urltools
+Author: Original work by Roderick Baier, republished by itzik-h
+Author-email: UNKNOWN
+License: MIT
+Download-URL: https://github.com/itzik-h/urltools/archive/0.3.2.tar.gz
+Description: UNKNOWN
+Platform: UNKNOWN

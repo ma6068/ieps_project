@@ -138,3 +138,17 @@ class DB:
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
+    
+    def getPageByUrl(self, url=None):
+        sql = "SELECT id FROM crawldb.page WHERE url = %s"
+        values = (url, )
+        try:
+            self.cur.execute(sql, values)
+            result = self.cur.fetchone()
+            if result:
+                return result
+        except psycopg2.IntegrityError as error:
+            raise error
+        except (Exception, psycopg2.DatabaseError):
+            self.conn.rollback()
+        return None

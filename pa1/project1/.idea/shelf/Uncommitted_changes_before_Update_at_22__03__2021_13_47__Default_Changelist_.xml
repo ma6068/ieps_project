@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Update_at_22__03__2021_13_47_[Default_Changelist]" date="1616417305708" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_22__03__2021_13_47_[Default_Changelist]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 22. 03. 2021 13:47 [Default Changelist]" />
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="latest/Lib/site-packages/beautifulsoup4-4.9.3.dist-info/REQUESTED" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_22__03__2021_13_47_[Default_Changelist]/REQUESTED" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="latest/Lib/site-packages/psycopg2-2.8.6.dist-info/REQUESTED" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_22__03__2021_13_47_[Default_Changelist]/REQUESTED1" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="latest/Lib/site-packages/psycopg2/_psycopg.cp39-win_amd64.pyd" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_22__03__2021_13_47_[Default_Changelist]/_psycopg.cp39-win_amd64.pyd" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="latest/Lib/site-packages/beautifulsoup4-4.9.3.dist-info/AUTHORS" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_22__03__2021_13_47_[Default_Changelist]/AUTHORS" />
+  </binary>
+</changelist>
