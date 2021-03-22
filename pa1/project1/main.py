@@ -4,12 +4,19 @@ from datetime import datetime
 
 from pip._vendor import requests
 
+from url_normalize import url_normalize
 import database.db as database
 import urllib.robotparser
 from bs4 import BeautifulSoup
 from frontier import Frontier
 from urllib.error import HTTPError
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit, urljoin
+
+
+def canonicalUrl(url):
+    splited =  '{uri.scheme}://{uri.netloc}/'.format(uri=urlsplit(url))
+
+    return url_normalize(urljoin(splited, url))
 
 db = database.DB()
 db.connectDB()
@@ -27,8 +34,10 @@ currentPageLink = fr.getUrl()
 
 while currentPageLink != None:
 
+    ############## dali e stranata ista po url so nekoja druga? ###########################
+
     try:
-        f = urllib.request.urlopen(currentPageLink)
+        f = urllib.request.urlopen(currentPageLink, timeout=10)
         htmlStatusCode = f.getcode()
     except HTTPError:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
@@ -76,10 +85,12 @@ while currentPageLink != None:
     pageIDByHash = db.getPageByHash(html_hash)
     if pageIDByHash is None:
         ##################### smeni page content #####################
-        pageID = db.insertPage(siteID, 'HTML', currentPageLink, html_content, htmlStatusCode, datetime.now(), html_hash)
+        pageID = db.insertPage(siteID, 'HTML', canonicalUrl(currentPageLink), html_content,
+                               htmlStatusCode, datetime.now(), html_hash)
     else:
         ###################### smeni status code #####################
-        pageID = db.insertPage(siteID, 'DUPLICATE', None, html_content, htmlStatusCode, datetime.now(), html_hash)
+        pageID = db.insertPage(siteID, 'DUPLICATE', canonicalUrl(currentPageLink), html_content,
+                               htmlStatusCode, datetime.now(), html_hash)
         db.insertLink(pageIDByHash, pageID)
         currentPageLink = fr.getUrl()
         continue
@@ -107,5 +118,17 @@ while currentPageLink != None:
 
 
 
-# tuka treba eden while, koj ce povikuva pajak da odi niz sekoja strana (dodeka ima strani)
-# vnatre vo toj while se nadolu so ima treba da se napisi za ovie raboti konstantno da se povikuva
+###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################
+# 1. lista za robots da ne mozi da vleguva vo zabranetite
+# 2. page_data treba da se sredi
+# 3. page type code (page tabela) - ne razlikuvame html/binary/frontier samo za duplicate ima
+# 4. slikite treba da se sreda
+# 5. datatype tabela - pdf,doc,docx...
+# 6. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu
+# 7. (luksuz) povekje roboti da rabotat istovremeno
+# 8. (luksuz) za da ne go preopteretuvame servero TIMEOUT
+# 9. (luksuz) agent so imeto obidzuko
+
+######################## prasanja koi ne' macat ########################
+# 1.
+# 2.
