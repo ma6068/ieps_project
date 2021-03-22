@@ -1,22 +1,25 @@
-from selenium import webdriver
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver import FirefoxProfile
-from selenium.webdriver.firefox.options import Options
+# da dostopuva ednska vo 5 sekundi se pravi so sleep i vreme da se oznaci koga ima dostop
 
-'''
-binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
-driver = webdriver.Firefox(firefox_binary=binary, executable_path=r"geckodriver-v0.29.0-win64/geckodriver.exe")
-try:
-    driver.get('https://www.youtube.com/')
-    html_content = driver.page_source  # ok e ovoa
-except TimeoutError:
-    print("nz veke so")
-driver.quit()
-'''
+text = '''User-agent: *
+Disallow: /admin 
+Disallow: /resources 
+Disallow: /pomoc'''
 
-from urllib.request import urlopen, Request
+robotPages = []
 
-f = urlopen(Request('https://www.gov.si/', headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
-htmlStatusCode = f.getcode()
-print(htmlStatusCode)
+
+def takeAllRobotPages(robotText):
+    r = []
+    for line in robotText.split("\n"):
+        if line.startswith('Disallow'):  # this is for disallowed url
+            r.append(line.split(': ')[1].split(' ')[0])
+    return r
+
+
+print(takeAllRobotPages(text))
+
+a = [1, 2, 3]
+b = [2, 3, 3]
+c = a + b
+print(c)
+

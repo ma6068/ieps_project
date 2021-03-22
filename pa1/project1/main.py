@@ -16,6 +16,13 @@ def canonicalUrl(url):
     return url_normalize(urljoin(splited, url))
 
 
+robotPages = []
+def takeAllRobotPages(robotText):
+    for line in robotText.split("\n"):
+        if line.startswith('Disallow'):  # this is for disallowed url
+            robotPages.append(line.split(': ')[1].split(' ')[0])
+
+
 db = database.DB()
 db.connectDB()
 db.createTables()
@@ -39,7 +46,6 @@ while currentPageLink is not None:
     try:
         f = urlopen(Request(currentPageLink, headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
         htmlStatusCode = f.getcode()
-        print(htmlStatusCode)
     except HTTPError:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
@@ -71,6 +77,9 @@ while currentPageLink is not None:
             robotFile.read()
             if robotFile.default_entry:
                 robotText = str(robotFile.default_entry)
+                takeAllRobotPages(robotText)
+                print(robotPages)
+                print("robot pages : " + robotPages)
             if robotFile.site_maps():
                 siteText = str("\n".join(robotFile.site_maps()))
         except Exception as exc:
