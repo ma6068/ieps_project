@@ -33,8 +33,11 @@ fr.addUrl('https://e-prostor.gov.si/')
 currentPageLink = fr.getUrl()
 
 while currentPageLink != None:
-
+    print(currentPageLink)
     ############## dali e stranata ista po url so nekoja druga? ###########################
+    if db.getPageByUrl(canonicalUrl(currentPageLink)) is not None:
+        currentPageLink = fr.getUrl()
+        continue
 
     try:
         f = urllib.request.urlopen(currentPageLink, timeout=10)
