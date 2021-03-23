@@ -1,5 +1,6 @@
 import hashlib
 import os
+import time
 from urllib.request import urlopen, Request
 from datetime import datetime
 from url_normalize import url_normalize
@@ -11,6 +12,10 @@ from urllib.error import HTTPError
 from urllib.parse import urlparse, urlsplit, urljoin
 import urllib
 from socket import timeout
+
+
+def timePassed(prevTime):
+    return time.time() - prevTime >= 5
 
 
 def canonicalUrl(url):
@@ -34,6 +39,7 @@ db.createTables()
 pictures = []
 
 fr = Frontier()
+fr.addUrl('https://www.gov.si/dogodki/', 0)
 fr.addUrl('http://www.gov.si/', 0)
 fr.addUrl('http://evem.gov.si/', 0)
 fr.addUrl('http://e-uprava.gov.si/', 0)
@@ -41,11 +47,16 @@ fr.addUrl('http://e-prostor.gov.si/', 0)
 
 # currentPageLink = (url, idParent)
 currentPageLink = fr.getUrl()
+currentTime = time.time()
 
 while currentPageLink is not None:
+    if timePassed(currentTime):
+        time.sleep(1)
+
     # probaj da ja otvoris narednata strana so e na red
     try:
         f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
+        currentTime = time.time()
     except HTTPError:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
@@ -85,29 +96,22 @@ while currentPageLink is not None:
     if siteID is None:
         # procitaj go robot.txt na toj site
         robotURL = 'http://' + domain + '/robots.txt'
+        robotFile = urllib.robotparser.RobotFileParser()
+        robotFile.set_url(robotURL)
+        robotText = None
+        siteText = None
         try:
-            urlopen(Request(robotURL), timeout=1)
-            robotFile = urllib.robotparser.RobotFileParser()
-            robotFile.set_url(robotURL)
+            robotFile.read()
+            if robotFile.default_entry:
+                robotText = str(robotFile.default_entry)
+                takeAllRobotPages(robotText, domain)
+                print(robotPages)
+            if robotFile.site_maps():
+                siteText = str("\n".join(robotFile.site_maps()))
+        except Exception as exc:
             robotText = None
             siteText = None
-            try:
-                robotFile.read()
-                if robotFile.default_entry:
-                    robotText = str(robotFile.default_entry)
-                    takeAllRobotPages(robotText, domain)
-                    print(robotPages)
-                if robotFile.site_maps():
-                    siteText = str("\n".join(robotFile.site_maps()))
-            except Exception as exc:
-                print('EXCEPTION WHILE CREATING: ')
-                print(exc)
-        except timeout:
-            robotText = None
-            siteText = None
-        except HTTPError:
-            robotText = None
-            siteText = None
+            print('EXCEPTION WHILE CREATING ROBOT, EVE SUM JAS, EVE GO KREVETO, EVE JA MAJKA TI')
 
         siteID = db.insertSite(domain, robotText, siteText)
 
