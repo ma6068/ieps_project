@@ -3,6 +3,8 @@ import os
 import time
 from urllib.request import urlopen, Request
 from datetime import datetime
+
+import requests
 from url_normalize import url_normalize
 import database.db as database
 import urllib.robotparser
@@ -39,7 +41,6 @@ db.createTables()
 pictures = []
 
 fr = Frontier()
-fr.addUrl('https://www.gov.si/dogodki/', 0)
 fr.addUrl('http://www.gov.si/', 0)
 fr.addUrl('http://evem.gov.si/', 0)
 fr.addUrl('http://e-uprava.gov.si/', 0)
@@ -62,10 +63,10 @@ while currentPageLink is not None:
         print('ERROR: THIS PAGE DOES NOT EXIST')
         currentPageLink = fr.getUrl()
         continue
-    except timeout:
-        print('TIMEOUT: THIS PAGE TIMED OUT')
-        currentPageLink = fr.getUrl()
-        continue
+    # except timeout:
+    #    print('TIMEOUT: THIS PAGE TIMED OUT')
+    #    currentPageLink = fr.getUrl()
+    #    continue
 
     # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
     # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
@@ -121,18 +122,38 @@ while currentPageLink is not None:
     html_hash = hash_object.hexdigest()
     info = f.info()
     page_type_code = info.get_content_type()
-    if 'text/html' in page_type_code:
-        page_type_code = 'HTML'
-    else:
-        page_type_code = 'BINARY'
 
     # gledame dali toj page e duplikat
     hashPageId = db.getPageByHash(html_hash)
     if hashPageId is None:
+        if 'text/html' in page_type_code:
+            page_type_code = 'HTML'
+        else:
+            page_type_code = 'BINARY'
+            request_headers = requests.utils.default_headers()
+            request_headers.update(
+                {"User-Agent": "fri-wier-obidzuko"}
+            )
+            response = requests.head(currentPageLink[0], headers=request_headers)
+            headers = response.headers
+            content_type_headers = headers.get('content-type')
+            content_type = "/"
+            if content_type == 'application/vnd.ms-powerpoint':
+                content_type = 'PPT'
+            elif content_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                content_type = 'PPTX'
+            elif content_type == 'application/msword':
+                content_type = 'DOC'
+            elif content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                content_type = 'DOCX'
+            elif content_type == 'application/pdf':
+                content_type = 'PDF'
         pageID = db.insertPage(siteID, page_type_code, canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
         if currentPageLink[1] != 0:
             db.insertLink(currentPageLink[1], pageID)
+        if page_type_code == 'BINARY':
+            db.insertPageData(pageID, content_type)
     else:
         pageID = db.insertPage(siteID, 'DUPLICATE', canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
