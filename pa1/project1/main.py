@@ -47,7 +47,6 @@ while currentPageLink[0] is not None:
     # probaj da ja otvoris narednata strana so e na red
     try:
         f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
-        htmlStatusCode = f.getcode()
     except HTTPError:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
@@ -114,11 +113,12 @@ while currentPageLink[0] is not None:
 
         siteID = db.insertSite(domain, robotText, siteText)
 
-    req = requests.get(currentPageLink[0])
-    html_content = req.text
+    htmlStatusCode = f.getcode()
+    html_content = page
     hash_object = hashlib.sha256(html_content.encode())
     html_hash = hash_object.hexdigest()
-    page_type_code = req.headers['content-type']
+    info = f.info()
+    page_type_code = info.get_content_type()
     if 'text/html' in page_type_code:
         page_type_code = 'HTML'
     else:
