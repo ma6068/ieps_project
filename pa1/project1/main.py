@@ -119,9 +119,10 @@ while currentPageLink[0] is not None:
     hash_object = hashlib.sha256(html_content.encode())
     html_hash = hash_object.hexdigest()
     page_type_code = req.headers['content-type']
-    if "html" in page_type_code:
+    if 'text/html' in page_type_code:
         page_type_code = 'HTML'
-    # TODO : dodadi i za binary
+    else:
+        page_type_code = 'BINARY'
 
     # gledame dali toj page e duplikat
     hashPageId = db.getPageByHash(html_hash)
