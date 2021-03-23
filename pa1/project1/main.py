@@ -2,7 +2,6 @@ import hashlib
 import os
 from urllib.request import urlopen, Request
 from datetime import datetime
-from pip._vendor import requests
 from url_normalize import url_normalize
 import database.db as database
 import urllib.robotparser
@@ -25,7 +24,7 @@ def takeAllRobotPages(robotText, domain):
     if "*" in a or "fri-wier-obidzuko" in a:
         for line in robotText.split("\n"):
             if line.startswith('Disallow'):  # this is for disallowed url
-                robotPages.append('https://' + domain + line.split(': ')[1].split(' ')[0])
+                robotPages.append('http://' + domain + line.split(': ')[1].split(' ')[0])
 
 
 db = database.DB()
@@ -35,15 +34,15 @@ db.createTables()
 pictures = []
 
 fr = Frontier()
-fr.addUrl('https://www.gov.si/', 0)
-fr.addUrl('https://evem.gov.si/', 0)
-fr.addUrl('https://e-uprava.gov.si/', 0)
-fr.addUrl('https://e-prostor.gov.si/', 0)
+fr.addUrl('http://www.gov.si/', 0)
+fr.addUrl('http://evem.gov.si/', 0)
+fr.addUrl('http://e-uprava.gov.si/', 0)
+fr.addUrl('http://e-prostor.gov.si/', 0)
 
 # currentPageLink = (url, idParent)
 currentPageLink = fr.getUrl()
 
-while currentPageLink[0] is not None:
+while currentPageLink is not None:
     # probaj da ja otvoris narednata strana so e na red
     try:
         f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
@@ -70,23 +69,22 @@ while currentPageLink[0] is not None:
     # ovoj url veke go imame vo bazata => zemi nareden
     if db.getPageByUrl(canonicalUrl(currentPageLink[0])) is not None:
         currentPageLink = fr.getUrl()
-        print("duplikat" + canonicalUrl(currentPageLink[0]))
         continue
 
     page = f.read().decode('utf-8')
     soup = BeautifulSoup(page)
 
     domain = urlparse(currentPageLink[0]).netloc # dava primer www.gov.si -> mora https://......../pomoc/
-    print('DOMAIN: ' + domain)
     if ".gov.si" not in domain:
-        currentPageLink[0] = fr.getUrl()
+        currentPageLink = fr.getUrl()
         continue
+    print('DOMAIN: ' + domain)
 
     # gledame dali sme na istiot domain, ako ne sme => dodadi nov site
     siteID = db.getSiteByDomain(domain)
     if siteID is None:
         # procitaj go robot.txt na toj site
-        robotURL = 'https://' + domain + '/robots.txt'
+        robotURL = 'http://' + domain + '/robots.txt'
         try:
             urlopen(Request(robotURL), timeout=1)
             robotFile = urllib.robotparser.RobotFileParser()
@@ -144,14 +142,14 @@ while currentPageLink[0] is not None:
     sliki = soup.find_all('img', src=True)
 
     # ovaj for e za linkovi
-    for lnk in linkovi[1:10]: ################## smeni da gi pomini site ############################
+    for lnk in linkovi: ################## smeni da gi pomini site ############################
         # if the link is not empty add the link to the database
         if lnk['href'] != '/':
             if (lnk['href']).startswith('http'):
                 fr.addUrl(lnk['href'], pageID)
             else:
                 # 'https://' + 'www.gov.si' + '/pomoc/
-                fr.addUrl('https://' + domain + lnk['href'], pageID)
+                fr.addUrl('http://' + domain + lnk['href'], pageID)
 
     # ovaj for e za sliki
     for sl in sliki[1:10]: ################## smeni da gi pomini site ############################
@@ -159,12 +157,12 @@ while currentPageLink[0] is not None:
             if (sl['src']).startswith('http') or (sl['src']).startswith('data'):
                 pictureLink = sl['src']
             elif (sl['src']).startswith('/' + domain):
-                pictureLink = 'https:/' + sl['src']
+                pictureLink = 'http:/' + sl['src']
             elif not (sl['src']).startswith('/'):
-                pictureLink = 'https://' + domain + '/' + sl['src']
+                pictureLink = 'http://' + domain + '/' + sl['src']
             else:
                 # 'https://' + 'www.gov.si' + '/pomoc/
-                pictureLink = 'https://' + domain + sl['src']
+                pictureLink = 'http://' + domain + sl['src']
 
             print(pictureLink)
             a = urlparse(pictureLink)
@@ -181,6 +179,8 @@ while currentPageLink[0] is not None:
             except TimeoutError as err:
                 print('TIMEOUT ERROR: ')
                 print(err)
+            except Exception as exc:
+                print('SKIPPED A PICTURE WITH A BAD URL')
 
             # OVAA LINIJA E GRESNA => DODADENA VO TRY
             #db.insertImage(pageID, filename, content_type, data, datetime.now())
