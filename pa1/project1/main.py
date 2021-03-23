@@ -1,4 +1,5 @@
 import hashlib
+import os
 from urllib.request import urlopen, Request
 from datetime import datetime
 from pip._vendor import requests
@@ -9,6 +10,8 @@ from bs4 import BeautifulSoup
 from frontier import Frontier
 from urllib.error import HTTPError
 from urllib.parse import urlparse, urlsplit, urljoin
+import urllib
+from socket import timeout
 
 
 def canonicalUrl(url):
@@ -18,9 +21,11 @@ def canonicalUrl(url):
 
 robotPages = []
 def takeAllRobotPages(robotText, domain):
-    for line in robotText.split("\n"):
-        if line.startswith('Disallow'):  # this is for disallowed url
-            robotPages.append('https://' + domain + line.split(': ')[1].split(' ')[0])
+    a = robotText.split("\n")[0]
+    if "*" in a or "fri-wier-obidzuko" in a:
+        for line in robotText.split("\n"):
+            if line.startswith('Disallow'):  # this is for disallowed url
+                robotPages.append('https://' + domain + line.split(': ')[1].split(' ')[0])
 
 
 db = database.DB()
@@ -39,7 +44,25 @@ fr.addUrl('https://e-prostor.gov.si/', 0)
 currentPageLink = fr.getUrl()
 
 while currentPageLink[0] is not None:
+    # probaj da ja otvoris narednata strana so e na red
+    try:
+        f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
+        htmlStatusCode = f.getcode()
+    except HTTPError:
+        # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
+        print('ERROR: THIS PAGE DOES NOT EXIST')
+        currentPageLink = fr.getUrl()
+        continue
+    except timeout:
+        print('TIMEOUT: THIS PAGE TIMED OUT')
+        currentPageLink = fr.getUrl()
+        continue
 
+    # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
+    # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
+    currentPageLink[0] = f.url
+
+    print('CURRENT PAGE: ' + currentPageLink[0])
     # ako e zabraneto (robots.txt) zemi naredna strana
     if currentPageLink[0] in robotPages:
         currentPageLink = fr.getUrl()
@@ -50,19 +73,6 @@ while currentPageLink[0] is not None:
         currentPageLink = fr.getUrl()
         continue
 
-    # probaj da ja otvoris narednata strana so e na red
-    try:
-        f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
-        htmlStatusCode = f.getcode()
-    except HTTPError:
-        # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
-        print('ERROR: THIS PAGE DOES NOT EXIST')
-        currentPageLink = fr.getUrl()
-        continue
-
-    # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
-    # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
-    currentPageLink[0] = f.url
     page = f.read().decode('utf-8')
     soup = BeautifulSoup(page)
 
@@ -77,21 +87,29 @@ while currentPageLink[0] is not None:
     if siteID is None:
         # procitaj go robot.txt na toj site
         robotURL = 'https://' + domain + '/robots.txt'
-        robotFile = urllib.robotparser.RobotFileParser()
-        robotFile.set_url(robotURL)
-        robotText = None
-        siteText = None
         try:
-            robotFile.read()
-            if robotFile.default_entry:
-                robotText = str(robotFile.default_entry)
-                takeAllRobotPages(robotText, domain)
-                print(robotPages)
-            if robotFile.site_maps():
-                siteText = str("\n".join(robotFile.site_maps()))
-        except Exception as exc:
-            print('EXCEPTION WHILE CREATING: ')
-            print(exc)
+            urlopen(Request(robotURL), timeout=1)
+            robotFile = urllib.robotparser.RobotFileParser()
+            robotFile.set_url(robotURL)
+            robotText = None
+            siteText = None
+            try:
+                robotFile.read()
+                if robotFile.default_entry:
+                    robotText = str(robotFile.default_entry)
+                    takeAllRobotPages(robotText, domain)
+                    print(robotPages)
+                if robotFile.site_maps():
+                    siteText = str("\n".join(robotFile.site_maps()))
+            except Exception as exc:
+                print('EXCEPTION WHILE CREATING: ')
+                print(exc)
+        except timeout:
+            robotText = None
+            siteText = None
+        except HTTPError:
+            robotText = None
+            siteText = None
 
         siteID = db.insertSite(domain, robotText, siteText)
 
@@ -130,8 +148,33 @@ while currentPageLink[0] is not None:
 
     # ovaj for e za sliki
     for sl in sliki[1:10]: ################## smeni da gi pomini site ############################
-        if lnk['href'] != '/': # if the img is not empty add the img to the database
-            pictures.append(currentPageLink[0] + (sl['src'])[1:])
+        if sl['src'] != '/': # if the img is not empty add the img to the database
+            if (sl['src']).startswith('http') or (sl['src']).startswith('data'):
+                pictureLink = sl['src']
+            elif (sl['src']).startswith('/' + domain):
+                pictureLink = 'https:/' + sl['src']
+            elif not (sl['src']).startswith('/'):
+                pictureLink = 'https://' + domain + '/' + sl['src']
+            else:
+                # 'https://' + 'www.gov.si' + '/pomoc/
+                pictureLink = 'https://' + domain + sl['src']
+
+            print(pictureLink)
+            a = urlparse(pictureLink)
+            filename = os.path.basename(a.path)
+
+            content_type = "/"
+            if filename.__contains__('.'):
+                content_type_table = filename.split(".")
+                content_type = content_type_table[len(content_type_table)-1]
+
+            try:
+                data = urlopen(pictureLink).read()
+            except TimeoutError as err:
+                print('TIMEOUT ERROR: ')
+                print(err)
+
+            db.insertImage(pageID, filename, content_type, data, datetime.now())
 
     currentPageLink = fr.getUrl() # ova posledno za da zemi strana od pocetoko
 
