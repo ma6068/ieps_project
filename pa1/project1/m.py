@@ -5,6 +5,7 @@ from url_normalize import url_normalize
 import os
 from datetime import datetime
 from urllib.request import urlopen
+import requests
 
 def canonicalUrl(url):
     splited =  '{uri.scheme}://{uri.netloc}/'.format(uri=urlsplit(url))
@@ -30,7 +31,30 @@ if __name__ == "__main__":
     data = urlopen(url).read()
     # print(data)
 
-    db.insertImage(pageID, filename, content_type, data, datetime.now())
+    # db.insertImage(pageID, filename, content_type, data, datetime.now())
+
+    #
+    request_headers = requests.utils.default_headers()
+    request_headers.update(
+        {"User-Agent": "fri-ieps-crawler-lj"}
+    )
+
+
+    response = requests.head(url, headers=request_headers)
+
+    headers = response.headers
+    content_type_headers = headers.get('content-type')
+    content_type = "/"
+    if content_type == 'application/vnd.ms-powerpoint':
+        content_type = 'PPT'
+    elif content_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        content_type = 'PPTX'
+    elif content_type == 'application/msword':
+        content_type = 'DOC'
+    elif content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        content_type = 'DOCX'
+    elif content_type == 'application/pdf':
+        content_type = 'PDF'
 
 
 
