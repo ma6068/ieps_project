@@ -228,5 +228,7 @@ while currentPageLink is not None:
 # 10. za page ne proveruvame robot.txt  NE NI TREBA ?
 
 ######################## prasanja koi ne' macat ########################
-# 1.
-# 2.
+# 1. Error so imame ako moze da se resi
+# 2. Status code imame samo 200, dali e ok, dali treba drugite da se zacuvat?
+# 3. Binary nemame seuste nikade....
+# 4. Kolku roboti e pametno da se napravat koga ke se napravi konecen run
