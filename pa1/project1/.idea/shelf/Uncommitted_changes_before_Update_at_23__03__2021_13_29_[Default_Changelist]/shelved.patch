@@ -1,0 +1,72 @@
+Index: martin.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>element = [[2, \"dsadasd\"]]\r\n\r\nelement.append([3, 4])\r\nprint(element)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/martin.py b/martin.py
+--- a/martin.py	(revision 4f238fb28ad6db78a1ef09e3ee65ac672445c0f5)
++++ b/martin.py	(date 1616495950759)
+@@ -1,4 +1,18 @@
+-element = [[2, "dsadasd"]]
++robotPages = []
++text = '''User-agent: *
++Disallow: /admin
++Disallow: /resources
++Disallow: /pomoc
++'''
++
+ 
+-element.append([3, 4])
+-print(element)
+\ No newline at end of file
++def takeAllRobotPages(robotText):
++    a = robotText.split("\n")[0]
++    if "*" in a or "fri-wier-obidzuko" in a:
++        for line in robotText.split("\n"):
++            if line.startswith('Disallow'):  # this is for disallowed url
++                robotPages.append(line.split(': ')[1].split(' ')[0])
++
++
++takeAllRobotPages(text)
++print(robotPages)
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import hashlib\r\nfrom urllib.request import urlopen, Request\r\nfrom datetime import datetime\r\nfrom pip._vendor import requests\r\nfrom url_normalize import url_normalize\r\nimport database.db as database\r\nimport urllib.robotparser\r\nfrom bs4 import BeautifulSoup\r\nfrom frontier import Frontier\r\nfrom urllib.error import HTTPError\r\nfrom urllib.parse import urlparse, urlsplit, urljoin\r\n\r\n\r\ndef canonicalUrl(url):\r\n    splited =  '{uri.scheme}://{uri.netloc}/'.format(uri=urlsplit(url))\r\n    return url_normalize(urljoin(splited, url))\r\n\r\n\r\nrobotPages = []\r\ndef takeAllRobotPages(robotText):\r\n    for line in robotText.split(\"\\n\"):\r\n        if line.startswith('Disallow'):  # this is for disallowed url\r\n            robotPages.append(line.split(': ')[1].split(' ')[0])\r\n\r\n\r\ndb = database.DB()\r\ndb.connectDB()\r\ndb.createTables()\r\n\r\npictures = []\r\n\r\nfr = Frontier()\r\nfr.addUrl('https://www.gov.si/', 0)\r\nfr.addUrl('https://evem.gov.si/', 0)\r\nfr.addUrl('https://e-uprava.gov.si/', 0)\r\nfr.addUrl('https://e-prostor.gov.si/', 0)\r\n\r\n# currentPageLink = (url, idParent)\r\ncurrentPageLink = fr.getUrl()\r\n\r\nwhile currentPageLink[0] is not None:\r\n    # ovoj url veke go imame vo bazata => zemi nareden\r\n    if db.getPageByUrl(canonicalUrl(currentPageLink[0])) is not None:\r\n        currentPageLink = fr.getUrl()\r\n        continue\r\n\r\n    # probaj da ja otvoris narednata strana so e na red\r\n    try:\r\n        f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)\r\n        htmlStatusCode = f.getcode()\r\n    except HTTPError:\r\n        # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok\r\n        print('ERROR: THIS PAGE DOES NOT EXIST')\r\n        currentPageLink = fr.getUrl()\r\n        continue\r\n\r\n    # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega\r\n    # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem\r\n    currentPageLink[0] = f.url\r\n    page = f.read().decode('utf-8')\r\n    soup = BeautifulSoup(page)\r\n\r\n    domain = urlparse(currentPageLink[0]).netloc # dava primer www.gov.si -> mora https://......../pomoc/\r\n    print('DOMAIN: ' + domain)\r\n    if \".gov.si\" not in domain:\r\n        currentPageLink[0] = fr.getUrl()\r\n        continue\r\n\r\n    # gledame dali sme na istiot domain, ako ne sme => dodadi nov site\r\n    siteID = db.getSiteByDomain(domain)\r\n    if siteID is None:\r\n        # procitaj go robot.txt na toj site\r\n        robotURL = 'https://' + domain + '/robots.txt'\r\n        robotFile = urllib.robotparser.RobotFileParser()\r\n        robotFile.set_url(robotURL)\r\n        robotText = None\r\n        siteText = None\r\n        try:\r\n            robotFile.read()\r\n            if robotFile.default_entry:\r\n                robotText = str(robotFile.default_entry)\r\n                takeAllRobotPages(robotText)\r\n                print(robotPages)\r\n            if robotFile.site_maps():\r\n                siteText = str(\"\\n\".join(robotFile.site_maps()))\r\n        except Exception as exc:\r\n            print('EXCEPTION WHILE CREATING: ')\r\n            print(exc)\r\n\r\n        siteID = db.insertSite(domain, robotText, siteText)\r\n\r\n    html_content = requests.get(currentPageLink[0]).text\r\n    hash_object = hashlib.sha256(html_content.encode())\r\n    html_hash = hash_object.hexdigest()\r\n\r\n    # gledame dali toj page e duplikat\r\n    if db.getPageByHash(html_hash) is None:\r\n        ##################### smeni page content #####################\r\n        pageID = db.insertPage(siteID, 'HTML', canonicalUrl(currentPageLink[0]), html_content,\r\n                               htmlStatusCode, datetime.now(), html_hash)\r\n        if currentPageLink[1] != 0:\r\n            db.insertLink(currentPageLink[1], pageID)\r\n    else:\r\n        ###################### smeni status code #####################\r\n        pageID = db.insertPage(siteID, 'DUPLICATE', canonicalUrl(currentPageLink[0]), html_content,\r\n                               htmlStatusCode, datetime.now(), html_hash)\r\n        if currentPageLink[1] != 0:\r\n            db.insertLink(currentPageLink[1], pageID)\r\n        currentPageLink = fr.getUrl()\r\n        continue\r\n\r\n    linkovi = soup.find_all('a', href=True)\r\n    sliki = soup.find_all('img', src=True)\r\n\r\n    # ovaj for e za linkovi\r\n    for lnk in linkovi[1:10]: ################## smeni da gi pomini site ############################\r\n        # if the link is not empty add the link to the database\r\n        if lnk['href'] != '/':\r\n            if (lnk['href']).startswith('http'):\r\n                fr.addUrl(lnk['href'], pageID)\r\n            else:\r\n                # 'https://' + 'www.gov.si' + '/pomoc/\r\n                fr.addUrl('https://' + domain + lnk['href'], pageID)\r\n\r\n    # ovaj for e za sliki\r\n    for sl in sliki[1:10]: ################## smeni da gi pomini site ############################\r\n        if lnk['href'] != '/': # if the img is not empty add the img to the database\r\n            pictures.append(currentPageLink[0] + (sl['src'])[1:])\r\n\r\n    currentPageLink = fr.getUrl() # ova posledno za da zemi strana od pocetoko\r\n\r\n\r\n\r\n\r\n###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################\r\n# 1. lista za robots da ne mozi da vleguva vo zabranetite\r\n# 2. page_data treba da se sredi\r\n# 3. page type code (page tabela) - ne razlikuvame html/binary/frontier samo za duplicate ima\r\n# 4. slikite treba da se sreda\r\n# 5. datatype tabela - pdf,doc,docx...\r\n# 6. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu\r\n# 7. (luksuz) povekje roboti da rabotat istovremeno\r\n# 8. (luksuz) za da ne go preopteretuvame servero TIMEOUT\r\n# 9. (luksuz) agent so imeto obidzuko\r\n# 10. za page ne proveruvame robot.txt\r\n\r\n######################## prasanja koi ne' macat ########################\r\n# 1.\r\n# 2.
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 4f238fb28ad6db78a1ef09e3ee65ac672445c0f5)
++++ b/main.py	(date 1616497867130)
+@@ -42,6 +42,7 @@
+     # ovoj url veke go imame vo bazata => zemi nareden
+     if db.getPageByUrl(canonicalUrl(currentPageLink[0])) is not None:
+         currentPageLink = fr.getUrl()
++        print("duplikat" + canonicalUrl(currentPageLink[0]))
+         continue
+ 
+     # probaj da ja otvoris narednata strana so e na red
+Index: abece.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/abece.py b/abece.py
+new file mode 100644
+--- /dev/null	(date 1616501575636)
++++ b/abece.py	(date 1616501575636)
+@@ -0,0 +1,10 @@
++from requests import HTTPError
++import mimetypes
++from pip._vendor import requests
++
++try:
++    r = requests.get('https://www.gov.si/')
++    content_type = r.headers['content-type']
++    print(content_type)
++except HTTPError:
++    print('ERROR: THIS PAGE DOES NOT EXIST')
+\ No newline at end of file

@@ -71,6 +71,7 @@ while currentPageLink[0] is not None:
     # ovoj url veke go imame vo bazata => zemi nareden
     if db.getPageByUrl(canonicalUrl(currentPageLink[0])) is not None:
         currentPageLink = fr.getUrl()
+        print("duplikat" + canonicalUrl(currentPageLink[0]))
         continue
 
     page = f.read().decode('utf-8')
@@ -113,23 +114,28 @@ while currentPageLink[0] is not None:
 
         siteID = db.insertSite(domain, robotText, siteText)
 
-    html_content = requests.get(currentPageLink[0]).text
+    req = requests.get(currentPageLink[0])
+    html_content = req.text
     hash_object = hashlib.sha256(html_content.encode())
     html_hash = hash_object.hexdigest()
+    page_type_code = req.headers['content-type']
+    if "html" in page_type_code:
+        page_type_code = 'HTML'
+    # TODO : dodadi i za binary
 
     # gledame dali toj page e duplikat
-    if db.getPageByHash(html_hash) is None:
-        ##################### smeni page content #####################
-        pageID = db.insertPage(siteID, 'HTML', canonicalUrl(currentPageLink[0]), html_content,
+    hashPageId = db.getPageByHash(html_hash)
+    if hashPageId is None:
+        pageID = db.insertPage(siteID, page_type_code, canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
         if currentPageLink[1] != 0:
             db.insertLink(currentPageLink[1], pageID)
     else:
-        ###################### smeni status code #####################
         pageID = db.insertPage(siteID, 'DUPLICATE', canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
         if currentPageLink[1] != 0:
             db.insertLink(currentPageLink[1], pageID)
+        db.insertLink(pageID, hashPageId)
         currentPageLink = fr.getUrl()
         continue
 
@@ -170,11 +176,13 @@ while currentPageLink[0] is not None:
 
             try:
                 data = urlopen(pictureLink).read()
+                db.insertImage(pageID, filename, content_type, data, datetime.now())
             except TimeoutError as err:
                 print('TIMEOUT ERROR: ')
                 print(err)
 
-            db.insertImage(pageID, filename, content_type, data, datetime.now())
+            # OVAA LINIJA E GRESNA => DODADENA VO TRY
+            #db.insertImage(pageID, filename, content_type, data, datetime.now())
 
     currentPageLink = fr.getUrl() # ova posledno za da zemi strana od pocetoko
 
