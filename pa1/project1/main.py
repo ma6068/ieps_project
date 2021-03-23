@@ -216,16 +216,16 @@ while currentPageLink is not None:
 
 
 ###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################
-# 1. lista za robots da ne mozi da vleguva vo zabranetite
-# 2. page_data treba da se sredi
-# 3. page type code (page tabela) - ne razlikuvame html/binary/frontier samo za duplicate ima
-# 4. slikite treba da se sreda
-# 5. datatype tabela - pdf,doc,docx...
-# 6. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu
-# 7. (luksuz) povekje roboti da rabotat istovremeno
-# 8. (luksuz) za da ne go preopteretuvame servero TIMEOUT
-# 9. (luksuz) agent so imeto obidzuko
-# 10. za page ne proveruvame robot.txt
+# 1. lista za robots da ne mozi da vleguva vo zabranetite   OK
+# 2. page_data treba da se sredi   OK
+# 3. page type code (page tabela) - ne razlikuvame html/binary/frontier samo za duplicate ima  OK
+# 4. slikite treba da se sreda   OK
+# 5. datatype tabela - pdf,doc,docx...   OK
+# 6. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu  (PITAJ ASISTENT)
+# 7. (luksuz) povekje roboti da rabotat istovremeno  // NE E NAPRAVENO
+# 8. (luksuz) za da ne go preopteretuvame servero TIMEOUT  // VALJDA E OK
+# 9. (luksuz) agent so imeto obidzuko   OK
+# 10. za page ne proveruvame robot.txt  NE NI TREBA ?
 
 ######################## prasanja koi ne' macat ########################
 # 1.
