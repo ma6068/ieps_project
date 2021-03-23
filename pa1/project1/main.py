@@ -17,10 +17,10 @@ def canonicalUrl(url):
 
 
 robotPages = []
-def takeAllRobotPages(robotText):
+def takeAllRobotPages(robotText, domain):
     for line in robotText.split("\n"):
         if line.startswith('Disallow'):  # this is for disallowed url
-            robotPages.append(line.split(': ')[1].split(' ')[0])
+            robotPages.append('https://' + domain + line.split(': ')[1].split(' ')[0])
 
 
 db = database.DB()
@@ -39,6 +39,12 @@ fr.addUrl('https://e-prostor.gov.si/', 0)
 currentPageLink = fr.getUrl()
 
 while currentPageLink[0] is not None:
+
+    # ako e zabraneto (robots.txt) zemi naredna strana
+    if currentPageLink[0] in robotPages:
+        currentPageLink = fr.getUrl()
+        continue
+
     # ovoj url veke go imame vo bazata => zemi nareden
     if db.getPageByUrl(canonicalUrl(currentPageLink[0])) is not None:
         currentPageLink = fr.getUrl()
@@ -79,7 +85,7 @@ while currentPageLink[0] is not None:
             robotFile.read()
             if robotFile.default_entry:
                 robotText = str(robotFile.default_entry)
-                takeAllRobotPages(robotText)
+                takeAllRobotPages(robotText, domain)
                 print(robotPages)
             if robotFile.site_maps():
                 siteText = str("\n".join(robotFile.site_maps()))
