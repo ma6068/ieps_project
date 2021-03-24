@@ -58,7 +58,7 @@ while currentPageLink is not None:
     try:
         f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
         currentTime = time.time()
-    except HTTPError:
+    except Exception:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
         currentPageLink = fr.getUrl()
@@ -109,10 +109,10 @@ while currentPageLink is not None:
                 print(robotPages)
             if robotFile.site_maps():
                 siteText = str("\n".join(robotFile.site_maps()))
-        except Exception as exc:
+        except Exception:
             robotText = None
             siteText = None
-            print('EXCEPTION WHILE CREATING ROBOT, EVE SUM JAS, EVE GO KREVETO, EVE JA MAJKA TI')
+            print('EXCEPTION WHILE CREATING ROBOT')
 
         siteID = db.insertSite(domain, robotText, siteText)
 
@@ -201,11 +201,11 @@ while currentPageLink is not None:
             try:
                 data = urlopen(pictureLink).read()
                 db.insertImage(pageID, filename, content_type, data, datetime.now())
-            except TimeoutError as err:
-                print('TIMEOUT ERROR: ')
-                print(err)
-            except Exception as exc:
-                print('SKIPPED A PICTURE WITH A BAD URL')
+            # except TimeoutError as err:
+            #     print('TIMEOUT ERROR: ')
+            #     print(err)
+            except Exception:
+                print('TIMEOUT ERROR OR SKIPPED A PICTURE WITH A BAD URL')
 
             # OVAA LINIJA E GRESNA => DODADENA VO TRY
             #db.insertImage(pageID, filename, content_type, data, datetime.now())
