@@ -58,28 +58,7 @@ if __name__ == "__main__":
     elif content_type == 'application/pdf':
         content_type = 'PDF'
 
-    noCrawlers = 1
-    threads = list()
-    if len(sys.argv) > 1 :
-        noCrawlers = int(sys.argv)
-
-
-    for i in range(noCrawlers):
-        pajak = Main() # na mestoto od main prajme instanca na novata klasa kaj so ke e crawlerot
-        threads.append(pajak)
-        pajak.start()
-
-    while True:
-        for i in threads:
-            if i.thread.is_alive():
-                keep_running = True
-                break
-            keep_running = False
-        if not keep_running:
-            break
 
 #   dodaj go vo klasata kaj startot
 
-        thread = threading.Thread(target=pajak) #na mestoto od pajak menvime funkcijata za start
-        thread.setDaemon(True)
-        thread.start()
+
