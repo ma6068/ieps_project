@@ -3,7 +3,6 @@ import os
 import time
 from urllib.request import urlopen, Request
 from datetime import datetime
-
 import requests
 from url_normalize import url_normalize
 import database.db as database
@@ -13,7 +12,6 @@ from frontier import Frontier
 from urllib.error import HTTPError
 from urllib.parse import urlparse, urlsplit, urljoin
 import urllib
-from socket import timeout
 
 
 def timePassed(prevTime):
@@ -51,6 +49,7 @@ currentPageLink = fr.getUrl()
 currentTime = time.time()
 
 while currentPageLink is not None:
+    print('CURRENT PAGE: ' + currentPageLink[0])
     if timePassed(currentTime):
         time.sleep(1)
 
@@ -58,21 +57,24 @@ while currentPageLink is not None:
     try:
         f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
         currentTime = time.time()
+    except HTTPError as httperror:
+        print("STATUS CODE ERROR !!!!!!")
+        print(httperror.getcode())
+        pageId = db.insertPage(None, None, currentPageLink[0], None, httperror.getcode(), datetime.now(), None)
+        db.insertLink(currentPageLink[1], pageId)
+        currentPageLink = fr.getUrl()
+        continue
     except Exception:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
         currentPageLink = fr.getUrl()
         continue
-    # except timeout:
-    #    print('TIMEOUT: THIS PAGE TIMED OUT')
-    #    currentPageLink = fr.getUrl()
-    #    continue
 
     # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
     # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
     currentPageLink[0] = f.url
 
-    print('CURRENT PAGE: ' + currentPageLink[0])
+    print('CHANGED PAGE: ' + currentPageLink[0])
     # ako e zabraneto (robots.txt) zemi naredna strana
     if currentPageLink[0] in robotPages:
         currentPageLink = fr.getUrl()
@@ -83,14 +85,33 @@ while currentPageLink is not None:
         currentPageLink = fr.getUrl()
         continue
 
-    page = f.read().decode('utf-8')
-    soup = BeautifulSoup(page)
+    if '.zip' in currentPageLink[0]:
+        currentPageLink = fr.getUrl()
+        continue
 
     domain = urlparse(currentPageLink[0]).netloc # dava primer www.gov.si -> mora https://......../pomoc/
     if ".gov.si" not in domain:
         currentPageLink = fr.getUrl()
         continue
     print('DOMAIN: ' + domain)
+
+    info = f.info()
+    page_type_code = info.get_content_type()
+    print(page_type_code)
+    htmlStatusCode = f.getcode()
+    if page_type_code == 'text/html':
+        page = f.read().decode('utf-8')
+        soup = BeautifulSoup(page)
+        html_content = page
+        hash_object = hashlib.sha256(html_content.encode())
+        html_hash = hash_object.hexdigest()
+
+        # gledame dali toj page e duplikat
+        hashPageId = db.getPageByHash(html_hash)
+    else:
+        hashPageId = None
+        html_content = None
+        html_hash = None
 
     # gledame dali sme na istiot domain, ako ne sme => dodadi nov site
     siteID = db.getSiteByDomain(domain)
@@ -116,15 +137,6 @@ while currentPageLink is not None:
 
         siteID = db.insertSite(domain, robotText, siteText)
 
-    htmlStatusCode = f.getcode()
-    html_content = page
-    hash_object = hashlib.sha256(html_content.encode())
-    html_hash = hash_object.hexdigest()
-    info = f.info()
-    page_type_code = info.get_content_type()
-
-    # gledame dali toj page e duplikat
-    hashPageId = db.getPageByHash(html_hash)
     if hashPageId is None:
         if 'text/html' in page_type_code:
             page_type_code = 'HTML'
@@ -138,22 +150,25 @@ while currentPageLink is not None:
             headers = response.headers
             content_type_headers = headers.get('content-type')
             content_type = "/"
-            if content_type == 'application/vnd.ms-powerpoint':
+            if content_type_headers == 'application/vnd.ms-powerpoint':
                 content_type = 'PPT'
-            elif content_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+            elif content_type_headers == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
                 content_type = 'PPTX'
-            elif content_type == 'application/msword':
+            elif content_type_headers == 'application/msword':
                 content_type = 'DOC'
-            elif content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            elif content_type_headers == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
                 content_type = 'DOCX'
-            elif content_type == 'application/pdf':
+            elif content_type_headers == 'application/pdf':
                 content_type = 'PDF'
         pageID = db.insertPage(siteID, page_type_code, canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
         if currentPageLink[1] != 0:
             db.insertLink(currentPageLink[1], pageID)
         if page_type_code == 'BINARY':
-            db.insertPageData(pageID, content_type)
+            if content_type != '/':
+                db.insertPageData(pageID, content_type)
+            currentPageLink = fr.getUrl()
+            continue
     else:
         pageID = db.insertPage(siteID, 'DUPLICATE', canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
@@ -169,6 +184,10 @@ while currentPageLink is not None:
     # ovaj for e za linkovi
     for lnk in linkovi: ################## smeni da gi pomini site ############################
         # if the link is not empty add the link to the database
+        if '.jpg' in lnk['href'] or '.png' in lnk['href'] or '.jpeg' in lnk['href'] or '.svg' in lnk['href'] \
+                or '.gif' in lnk['href'] or '.avif' in lnk['href'] or '.apng' in lnk['href'] \
+                or '.wbep' in lnk['href'] or '.pjp' in lnk['href'] or '.jfif' in lnk['href']:
+            continue
         if lnk['href'] != '/':
             if (lnk['href']).startswith('http'):
                 fr.addUrl(lnk['href'], pageID)
@@ -201,14 +220,8 @@ while currentPageLink is not None:
             try:
                 data = urlopen(pictureLink).read()
                 db.insertImage(pageID, filename, content_type, data, datetime.now())
-            # except TimeoutError as err:
-            #     print('TIMEOUT ERROR: ')
-            #     print(err)
             except Exception:
                 print('TIMEOUT ERROR OR SKIPPED A PICTURE WITH A BAD URL')
-
-            # OVAA LINIJA E GRESNA => DODADENA VO TRY
-            #db.insertImage(pageID, filename, content_type, data, datetime.now())
 
     currentPageLink = fr.getUrl() # ova posledno za da zemi strana od pocetoko
 
@@ -216,19 +229,14 @@ while currentPageLink is not None:
 
 
 ###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################
-# 1. lista za robots da ne mozi da vleguva vo zabranetite   OK
-# 2. page_data treba da se sredi   OK
-# 3. page type code (page tabela) - ne razlikuvame html/binary/frontier samo za duplicate ima  OK
-# 4. slikite treba da se sreda   OK
-# 5. datatype tabela - pdf,doc,docx...   OK
-# 6. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu  (PITAJ ASISTENT)
-# 7. (luksuz) povekje roboti da rabotat istovremeno  // NE E NAPRAVENO
-# 8. (luksuz) za da ne go preopteretuvame servero TIMEOUT  // VALJDA E OK
-# 9. (luksuz) agent so imeto obidzuko   OK
-# 10. za page ne proveruvame robot.txt  NE NI TREBA ?
+# 1. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu  (PITAJ ASISTENT)
+# 2. (luksuz) povekje roboti da rabotat istovremeno  // NE E NAPRAVENO
+# 3. (luksuz) za da ne go preopteretuvame servero TIMEOUT  // VALJDA E OK
+# 4. (luksuz) agent so imeto obidzuko   OK
 
 ######################## prasanja koi ne' macat ########################
 # 1. Error so imame ako moze da se resi
 # 2. Status code imame samo 200, dali e ok, dali treba drugite da se zacuvat?
 # 3. Binary nemame seuste nikade....
 # 4. Kolku roboti e pametno da se napravat koga ke se napravi konecen run
+# 5. So ako dojdi zip link? Dali da se preripuva?
