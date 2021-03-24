@@ -51,6 +51,7 @@ currentPageLink = fr.getUrl()
 currentTime = time.time()
 
 while currentPageLink is not None:
+    print('CURRENT PAGE: ' + currentPageLink[0])
     if timePassed(currentTime):
         time.sleep(1)
 
@@ -72,7 +73,7 @@ while currentPageLink is not None:
     # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
     currentPageLink[0] = f.url
 
-    print('CURRENT PAGE: ' + currentPageLink[0])
+    print('CHANGED PAGE: ' + currentPageLink[0])
     # ako e zabraneto (robots.txt) zemi naredna strana
     if currentPageLink[0] in robotPages:
         currentPageLink = fr.getUrl()
@@ -83,14 +84,24 @@ while currentPageLink is not None:
         currentPageLink = fr.getUrl()
         continue
 
-    page = f.read().decode('utf-8')
-    soup = BeautifulSoup(page)
+    if '.zip' in currentPageLink[0]:
+        currentPageLink = fr.getUrl()
+        continue
 
     domain = urlparse(currentPageLink[0]).netloc # dava primer www.gov.si -> mora https://......../pomoc/
     if ".gov.si" not in domain:
         currentPageLink = fr.getUrl()
         continue
     print('DOMAIN: ' + domain)
+
+    info = f.info()
+    page_type_code = info.get_content_type()
+    print(page_type_code)
+    if page_type_code == 'text/html':
+        page = f.read().decode('utf-8')
+    else:
+        page = f.read()
+    soup = BeautifulSoup(page)
 
     # gledame dali sme na istiot domain, ako ne sme => dodadi nov site
     siteID = db.getSiteByDomain(domain)
@@ -120,8 +131,6 @@ while currentPageLink is not None:
     html_content = page
     hash_object = hashlib.sha256(html_content.encode())
     html_hash = hash_object.hexdigest()
-    info = f.info()
-    page_type_code = info.get_content_type()
 
     # gledame dali toj page e duplikat
     hashPageId = db.getPageByHash(html_hash)
@@ -169,6 +178,10 @@ while currentPageLink is not None:
     # ovaj for e za linkovi
     for lnk in linkovi: ################## smeni da gi pomini site ############################
         # if the link is not empty add the link to the database
+        if '.jpg' in lnk['href'] or '.png' in lnk['href'] or '.jpeg' in lnk['href'] or '.svg' in lnk['href'] \
+                or '.gif' in lnk['href'] or '.avif' in lnk['href'] or '.apng' in lnk['href'] \
+                or '.wbep' in lnk['href'] or '.pjp' in lnk['href'] or '.jfif' in lnk['href']:
+            continue
         if lnk['href'] != '/':
             if (lnk['href']).startswith('http'):
                 fr.addUrl(lnk['href'], pageID)
@@ -232,3 +245,4 @@ while currentPageLink is not None:
 # 2. Status code imame samo 200, dali e ok, dali treba drugite da se zacuvat?
 # 3. Binary nemame seuste nikade....
 # 4. Kolku roboti e pametno da se napravat koga ke se napravi konecen run
+# 5. So ako dojdi zip link? Dali da se preripuva?
