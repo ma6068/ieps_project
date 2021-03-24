@@ -24,15 +24,16 @@ class MainCrawler:
         self.thisIsCrawlerNumber = thisIsCrawlerNumber
 
     def startThread(self):
-        thread = threading.Thread(target=self.mainFunction())
-        thread.setDaemon(True)
-        thread.start()
+        self.thread = threading.Thread(target=self.mainFunction)
+        self.thread.setDaemon(True)
+        self.thread.start()
+        return self.thread
 
     def timePassed(self, prevTime):
         return time.time() - prevTime >= 5
 
     def canonicalUrl(self, url):
-        splited =  '{uri.scheme}://{uri.netloc}/'.format(uri=urlsplit(url))
+        splited = '{uri.scheme}://{uri.netloc}/'.format(uri=urlsplit(url))
         return url_normalize(urljoin(splited, url))
 
     def takeAllRobotPages(self, robotText, domain):
