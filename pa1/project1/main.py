@@ -3,7 +3,6 @@ from pip._vendor.distlib.compat import raw_input
 from crawler import MainCrawler
 from frontier import Frontier
 import database.db as database
-import sys
 
 db = database.DB()
 db.connectDB()
@@ -23,9 +22,9 @@ threads = list()
 
 for i in range(noCrawlers):
     print(i)
-    crawler = MainCrawler(db, fr, robotPages, i) # na mestoto od main prajme instanca na novata klasa kaj so ke e crawlerot
+    crawler = MainCrawler(db=db, fr=fr, robotPages=robotPages, thisIsCrawlerNumber=i)
     threads.append(crawler)
-    crawler.mainFunction()
+    crawler.startThread()
 
 while True:
     crawlersRunning = False

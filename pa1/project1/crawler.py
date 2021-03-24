@@ -17,11 +17,13 @@ import urllib
 
 class MainCrawler:
 
-    def __init__(self, db=None, fr=None, robotPages=None, thisIsCrawlerNumber=0):
+    def __init__(self, db=None, fr=None, robotPages=None, thisIsCrawlerNumber=None):
         self.db = db
         self.fr = fr
         self.robotPages = robotPages
         self.thisIsCrawlerNumber = thisIsCrawlerNumber
+
+    def startThread(self):
         thread = threading.Thread(target=self.mainFunction())
         thread.setDaemon(True)
         thread.start()
