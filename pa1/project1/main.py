@@ -60,6 +60,10 @@ while currentPageLink is not None:
     except HTTPError as httperror:
         print("STATUS CODE ERROR !!!!!!")
         print(httperror.getcode())
+        pageId = db.insertPage(None, None, currentPageLink[0], None, httperror.getcode(), datetime.now(), None)
+        db.insertLink(currentPageLink[1], pageId)
+        currentPageLink = fr.getUrl()
+        continue
     except Exception:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')

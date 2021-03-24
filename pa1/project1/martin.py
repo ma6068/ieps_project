@@ -1,6 +1,6 @@
 from urllib.request import urlopen, Request
 
-f = urlopen(Request('https://www.gov.si/', headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
+f = urlopen.__get__(Request('https://www.gov.si/', headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
 page = f.read().decode('utf-8')
 
 htmlStatusCode = f.getcode()
