@@ -4,6 +4,8 @@ import threading
 import time
 from urllib.request import urlopen, Request
 from datetime import datetime
+
+import psycopg2
 import requests
 from url_normalize import url_normalize
 
@@ -59,8 +61,15 @@ class MainCrawler:
             except HTTPError as httperror:
                 print(str(self.thisIsCrawlerNumber) + ', STATUS CODE ERROR !!!!!!')
                 print(str(self.thisIsCrawlerNumber) + str(httperror.getcode()))
-                pageId = self.db.insertPage(None, None, currentPageLink[0], None, httperror.getcode(), datetime.now(), None)
-                self.db.insertLink(currentPageLink[1], pageId)
+                try:
+                    pageID = self.db.insertPage(None, None, currentPageLink[0], None, httperror.getcode(),
+                                                datetime.now(), None)
+                except psycopg2.IntegrityError:
+                    pageID = self.db.getPageByUrl(currentPageLink[0])
+                try:
+                    self.db.insertLink(currentPageLink[1], pageID)
+                except psycopg2.IntegrityError:
+                    print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 currentPageLink = self.fr.getUrl()
                 continue
             except Exception:
@@ -133,8 +142,10 @@ class MainCrawler:
                     robotText = None
                     siteText = None
                     print(str(self.thisIsCrawlerNumber) + ', EXCEPTION WHILE CREATING ROBOT')
-
-                siteID = self.db.insertSite(domain, robotText, siteText)
+                try:
+                    siteID = self.db.insertSite(domain, robotText, siteText)
+                except psycopg2.IntegrityError:
+                    siteID = self.db.getSiteByDomain(domain)
 
             if hashPageId is None:
                 if 'text/html' in page_type_code:
@@ -159,10 +170,16 @@ class MainCrawler:
                         content_type = 'DOCX'
                     elif content_type_headers == 'application/pdf':
                         content_type = 'PDF'
-                pageID = self.db.insertPage(siteID, page_type_code, self.canonicalUrl(currentPageLink[0]), html_content,
+                try:
+                    pageID = self.db.insertPage(siteID, page_type_code, self.canonicalUrl(currentPageLink[0]), html_content,
                                        htmlStatusCode, datetime.now(), html_hash)
+                except psycopg2.IntegrityError:
+                    pageID = self.db.getPageByUrl(currentPageLink[0])
                 if currentPageLink[1] != 0:
-                    self.db.insertLink(currentPageLink[1], pageID)
+                    try:
+                        self.db.insertLink(currentPageLink[1], pageID)
+                    except psycopg2.IntegrityError:
+                        print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 if page_type_code == 'BINARY':
                     if content_type != '/':
                         self.db.insertPageData(pageID, content_type)
@@ -170,11 +187,20 @@ class MainCrawler:
                     continue
             else:
                 print(str(self.thisIsCrawlerNumber) + ', ' + str(hashPageId))
-                pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]), html_content,
+                try:
+                    pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]), html_content,
                                        htmlStatusCode, datetime.now(), html_hash)
+                except psycopg2.IntegrityError:
+                    pageID = self.db.getPageByUrl(currentPageLink[0])
                 if currentPageLink[1] != 0:
-                    self.db.insertLink(currentPageLink[1], pageID)
-                self.db.insertLink(pageID, hashPageId)
+                    try:
+                        self.db.insertLink(currentPageLink[1], pageID)
+                    except psycopg2.IntegrityError:
+                        print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                try:
+                    self.db.insertLink(pageID, hashPageId)
+                except psycopg2.IntegrityError:
+                    print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 currentPageLink = self.fr.getUrl()
                 continue
 
