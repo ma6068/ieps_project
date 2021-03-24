@@ -3,7 +3,6 @@ import os
 import time
 from urllib.request import urlopen, Request
 from datetime import datetime
-
 import requests
 from url_normalize import url_normalize
 import database.db as database
@@ -13,7 +12,6 @@ from frontier import Frontier
 from urllib.error import HTTPError
 from urllib.parse import urlparse, urlsplit, urljoin
 import urllib
-from socket import timeout
 
 
 def timePassed(prevTime):
@@ -59,15 +57,14 @@ while currentPageLink is not None:
     try:
         f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
         currentTime = time.time()
+    except HTTPError as httperror:
+        print("STATUS CODE ERROR !!!!!!")
+        print(httperror.getcode())
     except Exception:
         # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
         print('ERROR: THIS PAGE DOES NOT EXIST')
         currentPageLink = fr.getUrl()
         continue
-    # except timeout:
-    #    print('TIMEOUT: THIS PAGE TIMED OUT')
-    #    currentPageLink = fr.getUrl()
-    #    continue
 
     # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
     # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
@@ -164,7 +161,8 @@ while currentPageLink is not None:
         if currentPageLink[1] != 0:
             db.insertLink(currentPageLink[1], pageID)
         if page_type_code == 'BINARY':
-            db.insertPageData(pageID, content_type)
+            if content_type != '/':
+                db.insertPageData(pageID, content_type)
             currentPageLink = fr.getUrl()
             continue
     else:
@@ -218,14 +216,8 @@ while currentPageLink is not None:
             try:
                 data = urlopen(pictureLink).read()
                 db.insertImage(pageID, filename, content_type, data, datetime.now())
-            # except TimeoutError as err:
-            #     print('TIMEOUT ERROR: ')
-            #     print(err)
             except Exception:
                 print('TIMEOUT ERROR OR SKIPPED A PICTURE WITH A BAD URL')
-
-            # OVAA LINIJA E GRESNA => DODADENA VO TRY
-            #db.insertImage(pageID, filename, content_type, data, datetime.now())
 
     currentPageLink = fr.getUrl() # ova posledno za da zemi strana od pocetoko
 
