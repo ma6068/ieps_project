@@ -169,6 +169,7 @@ class MainCrawler:
                     currentPageLink = self.fr.getUrl()
                     continue
             else:
+                print(str(self.thisIsCrawlerNumber) + ', ' + str(hashPageId))
                 pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]), html_content,
                                        htmlStatusCode, datetime.now(), html_hash)
                 if currentPageLink[1] != 0:
