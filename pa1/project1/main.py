@@ -97,11 +97,20 @@ while currentPageLink is not None:
     info = f.info()
     page_type_code = info.get_content_type()
     print(page_type_code)
+    htmlStatusCode = f.getcode()
     if page_type_code == 'text/html':
         page = f.read().decode('utf-8')
+        soup = BeautifulSoup(page)
+        html_content = page
+        hash_object = hashlib.sha256(html_content.encode())
+        html_hash = hash_object.hexdigest()
+
+        # gledame dali toj page e duplikat
+        hashPageId = db.getPageByHash(html_hash)
     else:
-        page = f.read()
-    soup = BeautifulSoup(page)
+        hashPageId = None
+        html_content = None
+        html_hash = None
 
     # gledame dali sme na istiot domain, ako ne sme => dodadi nov site
     siteID = db.getSiteByDomain(domain)
@@ -127,13 +136,6 @@ while currentPageLink is not None:
 
         siteID = db.insertSite(domain, robotText, siteText)
 
-    htmlStatusCode = f.getcode()
-    html_content = page
-    hash_object = hashlib.sha256(html_content.encode())
-    html_hash = hash_object.hexdigest()
-
-    # gledame dali toj page e duplikat
-    hashPageId = db.getPageByHash(html_hash)
     if hashPageId is None:
         if 'text/html' in page_type_code:
             page_type_code = 'HTML'
@@ -147,15 +149,15 @@ while currentPageLink is not None:
             headers = response.headers
             content_type_headers = headers.get('content-type')
             content_type = "/"
-            if content_type == 'application/vnd.ms-powerpoint':
+            if content_type_headers == 'application/vnd.ms-powerpoint':
                 content_type = 'PPT'
-            elif content_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+            elif content_type_headers == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
                 content_type = 'PPTX'
-            elif content_type == 'application/msword':
+            elif content_type_headers == 'application/msword':
                 content_type = 'DOC'
-            elif content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            elif content_type_headers == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
                 content_type = 'DOCX'
-            elif content_type == 'application/pdf':
+            elif content_type_headers == 'application/pdf':
                 content_type = 'PDF'
         pageID = db.insertPage(siteID, page_type_code, canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
@@ -163,6 +165,8 @@ while currentPageLink is not None:
             db.insertLink(currentPageLink[1], pageID)
         if page_type_code == 'BINARY':
             db.insertPageData(pageID, content_type)
+            currentPageLink = fr.getUrl()
+            continue
     else:
         pageID = db.insertPage(siteID, 'DUPLICATE', canonicalUrl(currentPageLink[0]), html_content,
                                htmlStatusCode, datetime.now(), html_hash)
@@ -229,16 +233,10 @@ while currentPageLink is not None:
 
 
 ###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################
-# 1. lista za robots da ne mozi da vleguva vo zabranetite   OK
-# 2. page_data treba da se sredi   OK
-# 3. page type code (page tabela) - ne razlikuvame html/binary/frontier samo za duplicate ima  OK
-# 4. slikite treba da se sreda   OK
-# 5. datatype tabela - pdf,doc,docx...   OK
-# 6. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu  (PITAJ ASISTENT)
-# 7. (luksuz) povekje roboti da rabotat istovremeno  // NE E NAPRAVENO
-# 8. (luksuz) za da ne go preopteretuvame servero TIMEOUT  // VALJDA E OK
-# 9. (luksuz) agent so imeto obidzuko   OK
-# 10. za page ne proveruvame robot.txt  NE NI TREBA ?
+# 1. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu  (PITAJ ASISTENT)
+# 2. (luksuz) povekje roboti da rabotat istovremeno  // NE E NAPRAVENO
+# 3. (luksuz) za da ne go preopteretuvame servero TIMEOUT  // VALJDA E OK
+# 4. (luksuz) agent so imeto obidzuko   OK
 
 ######################## prasanja koi ne' macat ########################
 # 1. Error so imame ako moze da se resi
