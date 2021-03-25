@@ -60,10 +60,10 @@ class MainCrawler:
                 currentTime = time.time()
             except HTTPError as httperror:
                 try:
-                    pageID = self.db.insertPage(None, None, currentPageLink[0], None, httperror.getcode(),
-                                                datetime.now(), None)
+                    pageID = self.db.insertPage(None, None, self.canonicalUrl(currentPageLink[0]),
+                                                None, httperror.getcode(), datetime.now(), None)
                 except psycopg2.IntegrityError:
-                    pageID = self.db.getPageByUrl(currentPageLink[0])
+                    pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
                 try:
                     self.db.insertLink(currentPageLink[1], pageID)
                 except psycopg2.IntegrityError:
@@ -169,10 +169,10 @@ class MainCrawler:
                     elif content_type_headers == 'application/pdf':
                         content_type = 'PDF'
                 try:
-                    pageID = self.db.insertPage(siteID, page_type_code, self.canonicalUrl(currentPageLink[0]), html_content,
-                                       htmlStatusCode, datetime.now(), html_hash)
+                    pageID = self.db.insertPage(siteID, page_type_code, self.canonicalUrl(currentPageLink[0]),
+                                                html_content, htmlStatusCode, datetime.now(), html_hash)
                 except psycopg2.IntegrityError:
-                    pageID = self.db.getPageByUrl(currentPageLink[0])
+                    pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
                 if currentPageLink[1] != 0:
                     try:
                         self.db.insertLink(currentPageLink[1], pageID)
@@ -186,10 +186,10 @@ class MainCrawler:
             else:
                 print(str(self.thisIsCrawlerNumber) + ', ' + str(hashPageId))
                 try:
-                    pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]), html_content,
-                                       htmlStatusCode, datetime.now(), html_hash)
+                    pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]),
+                                                html_content, htmlStatusCode, datetime.now(), html_hash)
                 except psycopg2.IntegrityError:
-                    pageID = self.db.getPageByUrl(currentPageLink[0])
+                    pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
                 if currentPageLink[1] != 0:
                     try:
                         self.db.insertLink(currentPageLink[1], pageID)
