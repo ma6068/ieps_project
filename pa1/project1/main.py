@@ -1,3 +1,4 @@
+from datetime import datetime
 from time import sleep
 
 from pip._vendor.distlib.compat import raw_input
@@ -22,6 +23,8 @@ txt = raw_input('Please enter the number of crawlers you would like to use simul
 noCrawlers = int(txt)
 threads = list()
 
+startingTime = datetime.now()
+
 for i in range(noCrawlers):
     print(i)
     crawler = MainCrawler(db=db, fr=fr, robotPages=robotPages, thisIsCrawlerNumber=i)
@@ -39,3 +42,6 @@ while True:
 
     if not crawlersRunning:
         break
+
+stopTime = datetime.now()
+print("Time running : " + str(stopTime - startingTime))
