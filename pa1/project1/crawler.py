@@ -50,7 +50,6 @@ class MainCrawler:
         currentTime = time.time()
 
         while currentPageLink is not None:
-            print(str(self.thisIsCrawlerNumber) + ', CURRENT PAGE: ' + currentPageLink[0])
             if self.timePassed(currentTime):
                 time.sleep(1)
 
@@ -72,7 +71,6 @@ class MainCrawler:
                 continue
             except Exception:
                 # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
-                print(str(self.thisIsCrawlerNumber) + ', ERROR: THIS PAGE DOES NOT EXIST')
                 currentPageLink = self.fr.getUrl()
                 continue
 
@@ -103,7 +101,6 @@ class MainCrawler:
 
             info = f.info()
             page_type_code = info.get_content_type()
-            print(str(self.thisIsCrawlerNumber) + page_type_code)
             htmlStatusCode = f.getcode()
             if page_type_code == 'text/html':
                 page = f.read().decode('utf-8')
@@ -135,10 +132,9 @@ class MainCrawler:
                         self.takeAllRobotPages(robotText, domain)
                     if robotFile.site_maps():
                         siteText = str("\n".join(robotFile.site_maps()))
-                except Exception as e:
+                except Exception:
                     robotText = None
                     siteText = None
-                    print(str(self.thisIsCrawlerNumber) + ', EXCEPTION WHILE CREATING ROBOT')
                 try:
                     siteID = self.db.insertSite(domain, robotText, siteText)
                 except psycopg2.IntegrityError:
@@ -183,7 +179,6 @@ class MainCrawler:
                     currentPageLink = self.fr.getUrl()
                     continue
             else:
-                print(str(self.thisIsCrawlerNumber) + ', ' + str(hashPageId))
                 try:
                     pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]),
                                                 html_content, htmlStatusCode, datetime.now(), html_hash)
@@ -231,7 +226,6 @@ class MainCrawler:
                         # 'https://' + 'www.gov.si' + '/pomoc/
                         pictureLink = 'http://' + domain + sl['src']
 
-                    print(str(self.thisIsCrawlerNumber) + pictureLink)
                     a = urlparse(pictureLink)
                     filename = os.path.basename(a.path)
 
@@ -247,9 +241,3 @@ class MainCrawler:
                         print(str(self.thisIsCrawlerNumber) + ', TIMEOUT ERROR OR SKIPPED A PICTURE WITH A BAD URL')
 
             currentPageLink = self.fr.getUrl() # ova posledno za da zemi strana od pocetoko
-
-
-
-
-###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################
-# 1. Za da ne go preopteretuvame servero TIMEOUT  // PROVERI DALI RABOTI
