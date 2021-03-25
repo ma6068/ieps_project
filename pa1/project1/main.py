@@ -1,3 +1,5 @@
+from time import sleep
+
 from pip._vendor.distlib.compat import raw_input
 
 from crawler import MainCrawler
@@ -25,6 +27,7 @@ for i in range(noCrawlers):
     crawler = MainCrawler(db=db, fr=fr, robotPages=robotPages, thisIsCrawlerNumber=i)
     threads.append(crawler)
     crawler.startThread()
+    sleep(1)
 
 while True:
     crawlersRunning = False
