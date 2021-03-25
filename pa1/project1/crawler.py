@@ -133,10 +133,9 @@ class MainCrawler:
                     if robotFile.default_entry:
                         robotText = str(robotFile.default_entry)
                         self.takeAllRobotPages(robotText, domain)
-                        print(str(self.thisIsCrawlerNumber) + self.robotPages)
                     if robotFile.site_maps():
                         siteText = str("\n".join(robotFile.site_maps()))
-                except Exception:
+                except Exception as e:
                     robotText = None
                     siteText = None
                     print(str(self.thisIsCrawlerNumber) + ', EXCEPTION WHILE CREATING ROBOT')
