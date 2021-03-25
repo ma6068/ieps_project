@@ -59,8 +59,6 @@ class MainCrawler:
                 f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
                 currentTime = time.time()
             except HTTPError as httperror:
-                print(str(self.thisIsCrawlerNumber) + ', STATUS CODE ERROR !!!!!!')
-                print(str(self.thisIsCrawlerNumber) + str(httperror.getcode()))
                 try:
                     pageID = self.db.insertPage(None, None, currentPageLink[0], None, httperror.getcode(),
                                                 datetime.now(), None)
@@ -222,7 +220,7 @@ class MainCrawler:
                         self.fr.addUrl('http://' + domain + lnk['href'], pageID)
 
             # ovaj for e za sliki
-            for sl in sliki[1:10]: ################## smeni da gi pomini site ############################
+            for sl in sliki:
                 if sl['src'] != '/': # if the img is not empty add the img to the database
                     if (sl['src']).startswith('http') or (sl['src']).startswith('data'):
                         pictureLink = sl['src']
@@ -255,14 +253,4 @@ class MainCrawler:
 
 
 ###################### STA NAMA OBIDZUKOVCI FALI (OSIM MOZAK I NERVE) ##########################
-# 1. status code (page tabela) - ne raboti ko ce e 404 error i taka natamu  (PITAJ ASISTENT)
-# 2. (luksuz) povekje roboti da rabotat istovremeno  // NE E NAPRAVENO
-# 3. (luksuz) za da ne go preopteretuvame servero TIMEOUT  // VALJDA E OK
-# 4. (luksuz) agent so imeto obidzuko   OK
-
-######################## prasanja koi ne' macat ########################
-# 1. Error so imame ako moze da se resi
-# 2. Status code imame samo 200, dali e ok, dali treba drugite da se zacuvat?
-# 3. Binary nemame seuste nikade....
-# 4. Kolku roboti e pametno da se napravat koga ke se napravi konecen run
-# 5. So ako dojdi zip link? Dali da se preripuva?
+# 1. Za da ne go preopteretuvame servero TIMEOUT  // PROVERI DALI RABOTI
