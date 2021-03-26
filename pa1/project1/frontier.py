@@ -1,9 +1,6 @@
 class Frontier:
-    def __init__(self, startUrls=None):
-        if not startUrls:
-            self.frontier = []
-        else:
-            self.frontier = startUrls.copy()
+    def __init__(self):
+        self.frontier = []
 
     def addUrl(self, url, parentId):
         self.frontier.append([url, parentId])

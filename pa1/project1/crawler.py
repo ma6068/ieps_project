@@ -46,6 +46,8 @@ class MainCrawler:
                     self.robotPages.append('http://' + domain + line.split(': ')[1].split(' ')[0])
 
     def mainFunction(self):
+        for el in self.fr:
+            print(el[0])
         currentPageLink = self.fr.getUrl()
         currentTime = time.time()
 
@@ -218,6 +220,12 @@ class MainCrawler:
 
             linkovi = soup.find_all('a', href=True)
             sliki = soup.find_all('img', src=True)
+            onclickElements = soup.find_all(onclick=True)
+
+            for element in onclickElements:
+                if 'href' in element['onclick']:
+                    d = element['onclick'].split("=")
+                    self.fr.addUrl(d[1][1:len(d[1])-1])
 
             # ovaj for e za linkovi
             for lnk in linkovi: ################## smeni da gi pomini site ############################
