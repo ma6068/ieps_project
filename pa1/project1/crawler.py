@@ -53,34 +53,8 @@ class MainCrawler:
             if self.timePassed(currentTime):
                 time.sleep(1)
 
-            # probaj da ja otvoris narednata strana so e na red
-            try:
-                f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
-                currentTime = time.time()
-            except HTTPError as httperror:
-                try:
-                    pageID = self.db.insertPage(None, None, self.canonicalUrl(currentPageLink[0]),
-                                                None, httperror.getcode(), datetime.now(), None)
-                except psycopg2.IntegrityError:
-                    pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
-                try:
-                    self.db.insertLink(currentPageLink[1], pageID)
-                except psycopg2.IntegrityError:
-                    print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                currentPageLink = self.fr.getUrl()
-                continue
-            except Exception:
-                # vo slucaj da e nekoj los link, zemame link od druga strana i odime od pocetok
-                currentPageLink = self.fr.getUrl()
-                continue
-
-            # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
-            # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
-            currentPageLink[0] = f.url
-
-            print(str(self.thisIsCrawlerNumber) + ', CHANGED PAGE: ' + currentPageLink[0])
-            # ako e zabraneto (robots.txt) zemi naredna strana
-            if currentPageLink[0] in self.robotPages:
+            # ako e zip direkno premini na druga strana
+            if '.zip' in currentPageLink[0]:
                 currentPageLink = self.fr.getUrl()
                 continue
 
@@ -89,7 +63,41 @@ class MainCrawler:
                 currentPageLink = self.fr.getUrl()
                 continue
 
-            if '.zip' in currentPageLink[0]:
+            getHttpError = None
+            # probaj da ja otvoris narednata strana so e na red
+            try:
+                f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
+                currentTime = time.time()
+            except HTTPError as httperror:
+                getHttpError = httperror
+            except Exception as exc:
+                print(str(self.thisIsCrawlerNumber) + ', EXCEPTION KAJ URLOPEN: ')
+                print(exc)
+                currentPageLink = self.fr.getUrl()
+                continue
+
+            # ako dobijame http error togas vaka go resavame, ako ne nikomu nisto
+            if getHttpError is not None:
+                try:
+                    pageID = self.db.insertPage(None, None, self.canonicalUrl(currentPageLink[0]),
+                                                None, httperror.getcode(), datetime.now(), None)
+                except psycopg2.IntegrityError:
+                    # pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
+                    currentPageLink = self.fr.getUrl()
+                    continue
+                try:
+                    self.db.insertLink(currentPageLink[1], pageID)
+                except psycopg2.IntegrityError:
+                    print('Integrity Error , kaj insert link')
+                currentPageLink = self.fr.getUrl()
+                continue
+
+            # ova mora zaradi preusmeruvanje, koga sme preusmereni proveruvame na koj link sme sega
+            # ako sme preusmereni ova ce go daj tocnio, toj koj so se koristi, i se e bez problem
+            currentPageLink[0] = f.url
+            print(str(self.thisIsCrawlerNumber) + ', CHANGED PAGE: ' + currentPageLink[0])
+            # ako e zabraneto (robots.txt) zemi naredna strana
+            if currentPageLink[0] in self.robotPages:
                 currentPageLink = self.fr.getUrl()
                 continue
 
@@ -103,14 +111,18 @@ class MainCrawler:
             page_type_code = info.get_content_type()
             htmlStatusCode = f.getcode()
             if page_type_code == 'text/html':
-                page = f.read().decode('utf-8')
-                soup = BeautifulSoup(page)
-                html_content = page
-                hash_object = hashlib.sha256(html_content.encode())
-                html_hash = hash_object.hexdigest()
+                try:
+                    page = f.read().decode('utf-8')
+                    soup = BeautifulSoup(page)
+                    html_content = page
+                    hash_object = hashlib.sha256(html_content.encode())
+                    html_hash = hash_object.hexdigest()
 
-                # gledame dali toj page e duplikat
-                hashPageId = self.db.getPageByHash(html_hash)
+                    # gledame dali toj page e duplikat
+                    hashPageId = self.db.getPageByHash(html_hash)
+                except Exception as exc:
+                    print(str(self.thisIsCrawlerNumber) + ', EXCEPTION KAJ f.read().decode(utf-8)')
+                    print(exc)
             else:
                 hashPageId = None
                 html_content = None
@@ -132,7 +144,9 @@ class MainCrawler:
                         self.takeAllRobotPages(robotText, domain)
                     if robotFile.site_maps():
                         siteText = str("\n".join(robotFile.site_maps()))
-                except Exception:
+                except Exception as exc:
+                    print(str(self.thisIsCrawlerNumber) + ', EXCEPTION KAJ f.read().decode(utf-8)')
+                    print(exc)
                     robotText = None
                     siteText = None
                 try:
@@ -167,12 +181,14 @@ class MainCrawler:
                     pageID = self.db.insertPage(siteID, page_type_code, self.canonicalUrl(currentPageLink[0]),
                                                 html_content, htmlStatusCode, datetime.now(), html_hash)
                 except psycopg2.IntegrityError:
-                    pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
+                    # pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
+                    currentPageLink = self.fr.getUrl()
+                    continue
                 if currentPageLink[1] != 0:
                     try:
                         self.db.insertLink(currentPageLink[1], pageID)
                     except psycopg2.IntegrityError:
-                        print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                        print('Integrity Error , kaj insert link')
                 if page_type_code == 'BINARY':
                     if content_type != '/':
                         self.db.insertPageData(pageID, content_type)
@@ -183,16 +199,20 @@ class MainCrawler:
                     pageID = self.db.insertPage(siteID, 'DUPLICATE', self.canonicalUrl(currentPageLink[0]),
                                                 html_content, htmlStatusCode, datetime.now(), html_hash)
                 except psycopg2.IntegrityError:
-                    pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
+                    # pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
+                    currentPageLink = self.fr.getUrl()
+                    continue
+
                 if currentPageLink[1] != 0:
                     try:
                         self.db.insertLink(currentPageLink[1], pageID)
                     except psycopg2.IntegrityError:
-                        print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                        print('Integrity Error , kaj insert link')
+
                 try:
                     self.db.insertLink(pageID, hashPageId)
                 except psycopg2.IntegrityError:
-                    print('PASSING HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                    print('Integrity Error , kaj insert link')
                 currentPageLink = self.fr.getUrl()
                 continue
 

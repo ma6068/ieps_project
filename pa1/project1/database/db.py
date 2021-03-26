@@ -44,8 +44,8 @@ class DB:
             self.conn.commit()
             result = self.cur.fetchone()
             return result[0]
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
@@ -59,8 +59,8 @@ class DB:
             self.conn.commit()
             result = self.cur.fetchone()
             return result[0]
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
@@ -82,8 +82,8 @@ class DB:
             self.conn.commit()
             result = self.cur.fetchone()
             return result[0]
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
@@ -94,8 +94,8 @@ class DB:
         try:
             self.cur.execute(sql, values)
             self.conn.commit()
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
 
@@ -105,8 +105,8 @@ class DB:
         try:
             self.cur.execute(sql, values)
             self.conn.commit()
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
 
@@ -119,8 +119,8 @@ class DB:
             result = self.cur.fetchone()
             if result:
                 return result
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
@@ -133,12 +133,12 @@ class DB:
             result = self.cur.fetchone()
             if result:
                 return result
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
-    
+
     def getPageByUrl(self, url=None):
         sql = "SELECT id FROM crawldb.page WHERE url = %s"
         values = (url, )
@@ -147,8 +147,8 @@ class DB:
             result = self.cur.fetchone()
             if result:
                 return result
-        except psycopg2.IntegrityError as error:
-            raise error
+        except psycopg2.IntegrityError:
+            self.conn.rollback()
         except (Exception, psycopg2.DatabaseError):
             self.conn.rollback()
         return None
