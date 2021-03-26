@@ -46,8 +46,6 @@ class MainCrawler:
                     self.robotPages.append('http://' + domain + line.split(': ')[1].split(' ')[0])
 
     def mainFunction(self):
-        for el in self.fr:
-            print(el[0])
         currentPageLink = self.fr.getUrl()
         currentTime = time.time()
 
