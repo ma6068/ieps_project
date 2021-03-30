@@ -69,7 +69,7 @@ class MainCrawler:
                 f = urlopen(Request(currentPageLink[0], headers={'User-Agent': 'fri-wier-obidzuko'}), timeout=10)
                 currentTime = time.time()
             except HTTPError as httperror:
-                getHttpError = httperror
+                getHttpError = httperror.getcode()
             except Exception as exc:
                 print(str(self.thisIsCrawlerNumber) + ', EXCEPTION KAJ URLOPEN: ')
                 print(exc)
@@ -80,7 +80,7 @@ class MainCrawler:
             if getHttpError is not None:
                 try:
                     pageID = self.db.insertPage(None, None, self.canonicalUrl(currentPageLink[0]),
-                                                None, httperror.getcode(), datetime.now(), None)
+                                                None, getHttpError, datetime.now(), None)
                 except psycopg2.IntegrityError:
                     # pageID = self.db.getPageByUrl(self.canonicalUrl(currentPageLink[0]))
                     currentPageLink = self.fr.getUrl()
@@ -223,7 +223,7 @@ class MainCrawler:
             for element in onclickElements:
                 if 'href' in element['onclick']:
                     d = element['onclick'].split("=")
-                    self.fr.addUrl(d[1][1:len(d[1])-1])
+                    self.fr.addUrl(d[1][1:len(d[1])-1], pageID)
 
             # ovaj for e za linkovi
             for lnk in linkovi: ################## smeni da gi pomini site ############################
