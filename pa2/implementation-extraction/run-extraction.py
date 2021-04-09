@@ -1,14 +1,23 @@
+import sys
+
 import A as a
 import B as b
 import C as c
 
-typeOfImplementation = input("Please enter A, B or C for the type of implementation: ")
+
+
+pages = ['../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html',
+         '../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljsÌe v razredu - RTVSLO.si.html',
+         '../input-extraction/overstock.com/jewelry01.html',
+         '../input-extraction/overstock.com/jewelry02.html']
+
+typeOfImplementation = sys.argv[1]
 
 if typeOfImplementation == 'A':
-    a.implementationA()
+    a.implementationA(pages)
 elif typeOfImplementation == 'B':
-    b.implementationB()
+    b.implementationB(pages)
 elif typeOfImplementation == 'C':
-    c.implementationC()
+    c.implementationC(pages)
 else:
     print("Wrong implementation!")

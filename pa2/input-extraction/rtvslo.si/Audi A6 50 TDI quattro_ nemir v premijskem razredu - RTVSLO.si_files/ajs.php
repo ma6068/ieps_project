@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
 var s = "<"+"div id=\'beacon_5ca4b451d800314645a908ddc087b809\' style=\'position: absolute; left: 0px; top: 0px; visibility: hidden;\'>\n";
 s += "<"+"img width=\"0\" height=\"0\" src=\"https://cat.nl.eu.criteo.com/delivery/lg.php?cppv=2&cpp=p_xP6HxqV0VFWk9lR0Y4dU0xSkJoMU9TYTRpcHkrUTNleS9RQUU5U0MvYThaQzlBVW5md1FrZXFidGpLYmhSUDZFalR4RHZHS1QyM3lNOGVOTVdzM21mdnhibFBYYVY0ZjQyenRPaEJjcmlCemtPelVZK2hlbmt0Qi9CbFJRbnplZjBQYkowWGU4Qk1iaThIajVNMGgrME9kQlZ5TmZ1ckJCVnFWSzlJNGE5YkFpb2lVSHNwWWd4U1loMGkxUDZsUGcrZW15WStFUHliUnFwSTVGc1JmT1dick1IV1RDV2ZNbWZzN1hXRXBXcjVqbHlqRzlyRTEzRlNXMjl2YlFBY0x2Vkx1fA\"/>\n";
 s += "<"+"/div>\n";

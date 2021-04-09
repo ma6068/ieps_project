@@ -14,13 +14,10 @@ except (UnicodeDecodeError, AttributeError):
         pass
 
 title = re.findall("PROD_ID[^>]*><b>([^<]*)</b>", page)
-print(title)
 
 list_price = re.findall("List Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><s>([^<]*)</s>", page)
-print(list_price)
 
 price = re.findall("Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"bigred\"><b>([^<]*)</b>", page)
-print(price)
 
 you_save = re.findall("You Save:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"littleorange\">([^<]*) ([^<]*)</span>", page)
 saving = []
