@@ -7,7 +7,7 @@ import C as c
 
 
 pages = ['../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html',
-         '../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljsÌe v razredu - RTVSLO.si.html',
+         '../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljs╠îe v razredu - RTVSLO.si.html',
          '../input-extraction/overstock.com/jewelry01.html',
          '../input-extraction/overstock.com/jewelry02.html']
 
