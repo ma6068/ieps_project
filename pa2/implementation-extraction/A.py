@@ -1,3 +1,4 @@
+import json
 import re
 
 
@@ -22,9 +23,17 @@ def regularniIzrazi(path, pageType):
         title = re.search("<h1>([^<]*)</h1>", page).group(1)
         subtitle = re.search("<div class=\"subtitle\">([^<]*)</div>", page).group(1)
         lead = re.search("<p class=\"lead\">([^<]*)</p>", page).group(1)
-        content = re.findall("<p[^>]*>([^<]*)</p>.*", page)
-        content = " ".join(content)
-        print(content)
+        #content = re.findall("<p[^>]*>([^<]*)</p>.*", page)
+        #content = " ".join(content)
+
+        jsonData = dict()
+        jsonData['author'] = author
+        jsonData['timePublished'] = timePublished
+        jsonData['placePublished'] = placePublished
+        jsonData['title'] = title
+        jsonData['subtitle'] = subtitle
+        jsonData['lead'] = lead
+        print(json.dumps(jsonData))
 
     elif pageType == 'ovr':
 
