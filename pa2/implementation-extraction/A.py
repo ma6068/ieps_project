@@ -19,7 +19,7 @@ def regularniIzrazi(path, pageType):
         author = re.search("<div class=\"author-name\">([^<]*)</div>", page).group(1)
         publishMeta = re.search("<div class=\"publish-meta\">\\s*([^<]*)<br>\\s*([^<]*)\\s*</div>", page)
         timePublished = publishMeta.group(1)
-        placePublished = re.sub('\s\s+', ' ', publishMeta.group(2))
+        placePublished = re.sub('\s\s*', ' ', publishMeta.group(2))
         title = re.search("<h1>([^<]*)</h1>", page).group(1)
         subtitle = re.search("<div class=\"subtitle\">([^<]*)</div>", page).group(1)
         lead = re.search("<p class=\"lead\">([^<]*)</p>", page).group(1)
