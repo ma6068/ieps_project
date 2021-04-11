@@ -33,6 +33,7 @@ def regularniIzrazi(path, pageType):
         jsonData['title'] = title
         jsonData['subtitle'] = subtitle
         jsonData['lead'] = lead
+        #jsonData['content'] = content
         print(json.dumps(jsonData))
 
     elif pageType == 'ovr':

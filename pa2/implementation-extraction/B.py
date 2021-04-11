@@ -24,8 +24,10 @@ def xpathIzrazi(path, pageType):
         title = tree.xpath("//h1/text()")[0]
         subtitle = tree.xpath("//div[@class='subtitle']/text()")[0]
         lead = tree.xpath("//p[@class='lead']/text()")[0]
-        #content = re.findall("<p[^>]*>([^<]*)</p>.*", page)
-        #content = " ".join(content)
+        multipleContents = tree.xpath("//article[@class='article']/p//text()")
+        content = multipleContents[0]
+        for i in range(1, len(multipleContents)):
+            content = content + '\n' + multipleContents[i]
 
         jsonData = dict()
         jsonData['author'] = author
@@ -34,6 +36,7 @@ def xpathIzrazi(path, pageType):
         jsonData['title'] = title
         jsonData['subtitle'] = subtitle
         jsonData['lead'] = lead
+        jsonData['content'] = content
         print(json.dumps(jsonData))
 
     elif pageType == 'ovr':
@@ -45,7 +48,7 @@ def xpathIzrazi(path, pageType):
 def implementationB(pages):
 
     xpathIzrazi(pages[0], 'rtv')
-    xpathIzrazi(pages[1], 'rtv')
+#    xpathIzrazi(pages[1], 'rtv')
 #    xpathIzrazi(pages[2], 'ovr')
 #    xpathIzrazi(pages[3], 'ovr')
 #    xpathIzrazi(pages[4], 'nep')
