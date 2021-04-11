@@ -14,7 +14,6 @@ def regularniIzrazi(path, pageType):
             pass
 
     if pageType == 'rtv':
-
         # Regularni izrazi
         author = re.search("<div class=\"author-name\">([^<]*)</div>", page).group(1)
         publishMeta = re.search("<div class=\"publish-meta\">\\s*([^<]*)<br>\\s*([^<]*)\\s*</div>", page)
@@ -34,7 +33,7 @@ def regularniIzrazi(path, pageType):
         jsonData['subtitle'] = subtitle
         jsonData['lead'] = lead
         #jsonData['content'] = content
-        print(json.dumps(jsonData))
+        # print(json.dumps(jsonData))
 
     elif pageType == 'ovr':
         title = re.findall("PROD_ID[^>]*><b>([^<]*)</b>", page)
@@ -55,16 +54,17 @@ def regularniIzrazi(path, pageType):
             jsonData['price'] = price[i]
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
-            print(json.dumps(jsonData))
+            jsonData['content'] = content
+            # print(json.dumps(jsonData))
 
     elif pageType == 'npr':
         print("NEPREMICNINE")
 
 
 def implementationA(pages):
-    regularniIzrazi(pages[0], 'rtv')
-#    regularniIzrazi(pages[1], 'rtv')
-#    regularniIzrazi(pages[2], 'ovr')
-#    regularniIzrazi(pages[3], 'ovr')
-#    regularniIzrazi(pages[4], 'nep')
-#    regularniIzrazi(pages[5], 'nep')
+    # regularniIzrazi(pages[0], 'rtv')
+    # regularniIzrazi(pages[1], 'rtv')
+    regularniIzrazi(pages[2], 'ovr')
+    # regularniIzrazi(pages[3], 'ovr')
+    # regularniIzrazi(pages[4], 'nep')
+    # regularniIzrazi(pages[5], 'nep')

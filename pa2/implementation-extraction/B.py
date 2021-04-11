@@ -52,6 +52,8 @@ def xpathIzrazi(path, pageType):
         you_save = tree.xpath(
             "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
             "td[2]/table//table//tr[3]/td[2]//text()")
+        content = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+                             "td[2]/table/tbody/tr/td[2]//text()")
         saving = []
         saving_percent = []
         for el in you_save:
@@ -66,16 +68,16 @@ def xpathIzrazi(path, pageType):
             jsonData['price'] = price[i]
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
+            jsonData['content'] = content
             print(json.dumps(jsonData))
 
     elif pageType == 'npr':
         print("NPR")
 
 def implementationB(pages):
-
-    xpathIzrazi(pages[0], 'rtv')
-#    xpathIzrazi(pages[1], 'rtv')
-#    xpathIzrazi(pages[2], 'ovr')
-#    xpathIzrazi(pages[3], 'ovr')
-#    xpathIzrazi(pages[4], 'nep')
-#    xpathIzrazi(pages[5], 'nep')
+    # xpathIzrazi(pages[0], 'rtv')
+    # xpathIzrazi(pages[1], 'rtv')
+    xpathIzrazi(pages[2], 'ovr')
+    # xpathIzrazi(pages[3], 'ovr')
+    # xpathIzrazi(pages[4], 'nep')
+    # xpathIzrazi(pages[5], 'nep')
