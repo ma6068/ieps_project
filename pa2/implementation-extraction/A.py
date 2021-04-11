@@ -37,22 +37,16 @@ def regularniIzrazi(path, pageType):
         print(json.dumps(jsonData))
 
     elif pageType == 'ovr':
-
         title = re.findall("PROD_ID[^>]*><b>([^<]*)</b>", page)
-
         list_price = re.findall("List Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><s>([^<]*)</s>", page)
-
         price = re.findall("Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"bigred\"><b>([^<]*)</b>", page)
-
         you_save = re.findall("You Save:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"littleorange\">([^<]*) ([^<]*)</span>", page)
         saving = []
         saving_percent = []
         for el in you_save:
             saving.append(el[0])
             saving_percent.append(el[1])
-
         content = re.findall("class=\"normal\">([^<]*)<br>", page)
-        print(price)
 
     elif pageType == 'npr':
         print("NEPREMICNINE")

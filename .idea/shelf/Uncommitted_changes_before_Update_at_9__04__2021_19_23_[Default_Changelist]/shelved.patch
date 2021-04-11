@@ -1,0 +1,20 @@
+Index: pa2/implementation-extraction/martin.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import codecs\r\nimport re\r\nfrom bs4 import BeautifulSoup\r\n\r\npath = \"../WebPages/overstock.com/jewelry02.html\"\r\n\r\npage = open(path, 'rb').read()\r\ntry:\r\n    page = str(page, \"utf-8\")\r\nexcept (UnicodeDecodeError, AttributeError):\r\n    try:\r\n        page = str(page)\r\n    except (UnicodeDecodeError, AttributeError):\r\n        pass\r\n\r\ntitle = re.findall(\"PROD_ID[^>]*><b>([^<]*)</b>\", page)\r\nprint(title)\r\n\r\nlist_price = re.findall(\"List Price:</b></td><td align=\\\"left\\\" nowrap=\\\"nowrap\\\"><s>([^<]*)</s>\", page)\r\nprint(list_price)\r\n\r\nprice = re.findall(\"Price:</b></td><td align=\\\"left\\\" nowrap=\\\"nowrap\\\"><span class=\\\"bigred\\\"><b>([^<]*)</b>\", page)\r\nprint(price)\r\n\r\nyou_save = re.findall(\"You Save:</b></td><td align=\\\"left\\\" nowrap=\\\"nowrap\\\"><span class=\\\"littleorange\\\">([^<]*) ([^<]*)</span>\", page)\r\nsaving = []\r\nsaving_percent = []\r\nfor el in you_save:\r\n    saving.append(el[0])\r\n    saving_percent.append(el[1])\r\nprint(saving)\r\nprint(saving_percent)\r\n\r\ncontent = re.findall(\"class=\\\"normal\\\">([^<]*)<br>\", page)\r\nprint(content)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pa2/implementation-extraction/martin.py b/pa2/implementation-extraction/martin.py
+--- a/pa2/implementation-extraction/martin.py	(revision 19e87a994b080ffd1e31f330c1c62f77c3999b22)
++++ b/pa2/implementation-extraction/martin.py	(date 1617980592746)
+@@ -1,8 +1,6 @@
+-import codecs
+ import re
+-from bs4 import BeautifulSoup
+ 
+-path = "../WebPages/overstock.com/jewelry02.html"
++path = "../WebPages/overstock.com/jewelry01.html"
+ 
+ page = open(path, 'rb').read()
+ try:
