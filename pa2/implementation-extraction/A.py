@@ -48,6 +48,15 @@ def regularniIzrazi(path, pageType):
             saving_percent.append(el[1])
         content = re.findall("class=\"normal\">([^<]*)<br>", page)
 
+        for i in range(0, len(title)):
+            jsonData = dict()
+            jsonData['title'] = title[i]
+            jsonData['list_price'] = list_price[i]
+            jsonData['price'] = price[i]
+            jsonData['saving'] = saving[i]
+            jsonData['saving_percent'] = saving_percent[i]
+            print(json.dumps(jsonData))
+
     elif pageType == 'npr':
         print("NEPREMICNINE")
 
