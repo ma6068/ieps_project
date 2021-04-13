@@ -72,12 +72,34 @@ def xpathIzrazi(path, pageType):
             print(json.dumps(jsonData))
 
     elif pageType == 'npr':
-        print("NPR")
+        tree = html.fromstring(page)
+        cena = tree.xpath("//span[@class='cena']/text()")
+        agencija = tree.xpath("//span[@class='agencija']/text()")
+        velikost = tree.xpath("//span[@class='velikost']/text()")
+        district = tree.xpath("//span[@class='title']/text()")
+        desc = tree.xpath("//div[@class='kratek']/text()")
+        leto = tree.xpath("//span[@class='atribut leto']/strong/text()")
+        title = tree.xpath("//span[@class='vrsta']/text()")
+        slika = tree.xpath("//img[@class='lazyload']/@data-src | //img[@class=' lazyload']/@data-src | //img[@class='lazyloaded']/@data-src | //img[@class=' lazyloaded']/@data-src")
+
+
+        for i in range(0, len(title)):
+            jsonData = dict()
+            jsonData['cena'] = cena[i]
+            jsonData['agencija'] = agencija[i]
+            jsonData['velikost'] = velikost[i]
+            jsonData['district'] = district[i]
+            jsonData['desc'] = desc[i]
+            jsonData['leto'] = leto[i]
+            jsonData['title'] = title[i]
+            jsonData['slika'] = slika[i]
+            print(json.dumps(jsonData))
 
 def implementationB(pages):
-    # xpathIzrazi(pages[0], 'rtv')
-    # xpathIzrazi(pages[1], 'rtv')
-    xpathIzrazi(pages[2], 'ovr')
-    # xpathIzrazi(pages[3], 'ovr')
-    # xpathIzrazi(pages[4], 'nep')
-    # xpathIzrazi(pages[5], 'nep')
+
+#    xpathIzrazi(pages[0], 'rtv')
+#    xpathIzrazi(pages[1], 'rtv')
+#    xpathIzrazi(pages[2], 'ovr')
+#    xpathIzrazi(pages[3], 'ovr')
+    xpathIzrazi(pages[4], 'npr')
+    xpathIzrazi(pages[5], 'npr')
