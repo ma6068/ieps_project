@@ -58,13 +58,35 @@ def regularniIzrazi(path, pageType):
             # print(json.dumps(jsonData))
 
     elif pageType == 'npr':
-        print("NEPREMICNINE")
+        cena = re.findall("<span class=\"cena\">([^<]*)</span>", page)
+        agencija = re.findall("<span class=\"agencija\">([^<]*)</span>", page)
+        velikost = re.findall("<span class=\"velikost\" lang=\"sl\">([^<]*)</span>", page)
+        district = re.findall("<span class=\"title\">([^<]*)</span>", page)
+        desc = re.findall("<div class=\"kratek\" (itemprop|itemqrop)=\"description\">([^<]*)</div>", page)
+        print(len(desc))
+        # print(desc)
+        leto = re.findall("<span class=\"atribut leto\">Leto: <strong>([^<]*)</strong></span>", page)
+        title = re.findall("<span class=\"vrsta\">([^<]*)</span>", page)
+        slika = re.findall("<img class=\"(lazyload|lazyloaded| lazyload| lazyloaded)\" data-src=\"([^\"]*)\"", page)
+
+        for i in range(0, len(title)):
+            jsonData = dict()
+            jsonData['cena'] = cena[i].replace(" \u20ac", "")
+            jsonData['agencija'] = agencija[i].replace("\u0161", "š").replace("\u010d", "č")
+            jsonData['velikost'] = velikost[i]
+            jsonData['district'] = district[i].replace("\u0161", "š").replace("\u010d", "č")
+            jsonData['desc'] = desc[i][1]
+            jsonData['leto'] = leto[i]
+            jsonData['title'] = title[i].replace("\u0161", "š").replace("\u010d", "č")
+            jsonData['slika'] = slika[i][1]
+            print(json.dumps(jsonData))
+        # print("NEPREMICNINE")
 
 
 def implementationA(pages):
     # regularniIzrazi(pages[0], 'rtv')
     # regularniIzrazi(pages[1], 'rtv')
-    regularniIzrazi(pages[2], 'ovr')
+    # regularniIzrazi(pages[2], 'ovr')
     # regularniIzrazi(pages[3], 'ovr')
-    # regularniIzrazi(pages[4], 'nep')
-    # regularniIzrazi(pages[5], 'nep')
+    regularniIzrazi(pages[4], 'npr')
+    regularniIzrazi(pages[5], 'npr')
