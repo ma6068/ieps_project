@@ -45,7 +45,9 @@ def regularniIzrazi(path, pageType):
         for el in you_save:
             saving.append(el[0])
             saving_percent.append(el[1])
-        content = re.findall("class=\"normal\">([^<]*)<br>", page)
+        content = re.findall("span class=\"normal\">([^<]*)<br>", page)
+        content = [el.replace('\\r\\n', ' ').replace('\\', '') for el in content]
+        #print(content)
 
         for i in range(0, len(title)):
             jsonData = dict()
@@ -55,7 +57,7 @@ def regularniIzrazi(path, pageType):
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
             jsonData['content'] = content
-            # print(json.dumps(jsonData))
+            #print(json.dumps(jsonData))
 
     elif pageType == 'npr':
         cena = re.findall("<span class=\"cena\">([^<]*)</span>", page)
@@ -86,7 +88,7 @@ def regularniIzrazi(path, pageType):
 def implementationA(pages):
     # regularniIzrazi(pages[0], 'rtv')
     # regularniIzrazi(pages[1], 'rtv')
-    # regularniIzrazi(pages[2], 'ovr')
-    # regularniIzrazi(pages[3], 'ovr')
-    regularniIzrazi(pages[4], 'npr')
-    regularniIzrazi(pages[5], 'npr')
+    regularniIzrazi(pages[2], 'ovr')
+    #regularniIzrazi(pages[3], 'ovr')
+    # regularniIzrazi(pages[4], 'npr')
+    # regularniIzrazi(pages[5], 'npr')

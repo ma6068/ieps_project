@@ -3,7 +3,7 @@ import re
 
 from lxml import html
 
-path = "../input-extraction/overstock.com/jewelry01.html"
+path = "../input-extraction/overstock.com/jewelry02.html"
 
 page = open(path, 'rb').read()
 try:
@@ -27,9 +27,8 @@ you_save = tree.xpath(
 
 content = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
                      "td[2]/table/tbody/tr/td[2]//text()")
-
-
 print(content[0])
+print(content[1])
 
 saving = []
 saving_percent = []
@@ -47,3 +46,4 @@ for i in range(0, len(title)):
     jsonData['saving_percent'] = saving_percent[i]
     #print(json.dumps(jsonData))
 
+"//div[@class='main-data']/span[@class='velikost']//text()"

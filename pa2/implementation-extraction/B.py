@@ -52,8 +52,15 @@ def xpathIzrazi(path, pageType):
         you_save = tree.xpath(
             "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
             "td[2]/table//table//tr[3]/td[2]//text()")
-        content = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+        cont = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
                              "td[2]/table/tbody/tr/td[2]//text()")
+        content = []
+        for i in range(0, len(cont), 3):
+            c = cont[i] + " " + cont[i+1]
+            c = c.replace('\\r\\n', ' ').replace('\\', '').replace('  ', ' ')
+            content.append(c)
+        # print(content)
+
         saving = []
         saving_percent = []
         for el in you_save:
@@ -69,7 +76,7 @@ def xpathIzrazi(path, pageType):
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
             jsonData['content'] = content
-            print(json.dumps(jsonData))
+            #print(json.dumps(jsonData))
 
     elif pageType == 'npr':
         tree = html.fromstring(page)
@@ -95,11 +102,11 @@ def xpathIzrazi(path, pageType):
             jsonData['slika'] = slika[i]
             print(json.dumps(jsonData))
 
-def implementationB(pages):
 
-#    xpathIzrazi(pages[0], 'rtv')
-#    xpathIzrazi(pages[1], 'rtv')
-#    xpathIzrazi(pages[2], 'ovr')
-#    xpathIzrazi(pages[3], 'ovr')
-    xpathIzrazi(pages[4], 'npr')
-    xpathIzrazi(pages[5], 'npr')
+def implementationB(pages):
+   # xpathIzrazi(pages[0], 'rtv')
+   # xpathIzrazi(pages[1], 'rtv')
+   xpathIzrazi(pages[2], 'ovr')
+   # xpathIzrazi(pages[3], 'ovr')
+   # xpathIzrazi(pages[4], 'npr')
+   # xpathIzrazi(pages[5], 'npr')
