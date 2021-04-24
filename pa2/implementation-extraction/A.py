@@ -1,8 +1,6 @@
 import json
 import re
 
-from bs4 import BeautifulSoup
-
 
 def regularniIzrazi(path, pageType):
 
