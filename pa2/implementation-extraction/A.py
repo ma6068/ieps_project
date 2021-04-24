@@ -1,6 +1,8 @@
 import json
 import re
 
+from bs4 import BeautifulSoup
+
 
 def regularniIzrazi(path, pageType):
 
@@ -22,8 +24,18 @@ def regularniIzrazi(path, pageType):
         title = re.search("<h1>([^<]*)</h1>", page).group(1)
         subtitle = re.search("<div class=\"subtitle\">([^<]*)</div>", page).group(1)
         lead = re.search("<p class=\"lead\">([^<]*)</p>", page).group(1)
-        # content = re.findall("<p class=\"Body\">([^<]*)</div>", page)
-        # print(content)
+        content = re.findall('<article class=\"article\">(.+?)</article>', page, flags=re.DOTALL)
+        c = ''
+        for e in content:
+            c = re.sub('<figure.*?</figure>', '', e, flags=re.DOTALL)
+            c = re.sub('<.*?>', '', c)
+        # print(c)
+        lines = c.split("\n")
+        non_empty_lines = [line for line in lines if line.strip() != ""]
+        string_without_empty_lines = ""
+        for line in non_empty_lines:
+            string_without_empty_lines += line
+        content = string_without_empty_lines
 
         jsonData = dict()
         jsonData['author'] = author
@@ -32,8 +44,8 @@ def regularniIzrazi(path, pageType):
         jsonData['title'] = title
         jsonData['subtitle'] = subtitle
         jsonData['lead'] = lead
-        # jsonData['content'] = content
-        # print(json.dumps(jsonData, ensure_ascii=False))
+        jsonData['content'] = content
+        print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'ovr':
         title = re.findall("PROD_ID[^>]*><b>([^<]*)</b>", page)
