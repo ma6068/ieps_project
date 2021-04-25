@@ -27,7 +27,8 @@ def xpathIzrazi(path, pageType):
         multipleContents = tree.xpath("//article[@class='article']/p//text()")
         content = multipleContents[0]
         for i in range(1, len(multipleContents)):
-            content = content + '\n' + multipleContents[i]
+            content = content + ' ' + multipleContents[i]
+        # print(content)
 
         jsonData = dict()
         jsonData['author'] = author
@@ -37,19 +38,75 @@ def xpathIzrazi(path, pageType):
         jsonData['subtitle'] = subtitle
         jsonData['lead'] = lead
         jsonData['content'] = content
-        print(json.dumps(jsonData))
+        # print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'ovr':
-        print("OVR")
+        tree = html.fromstring(page)
+        title = tree.xpath(
+            "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/td[2]/a//text()")
+        list_price = tree.xpath(
+            "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+            "td[2]/table//table//tr[1]/td[2]//text()")
+        price = tree.xpath(
+            "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+            "td[2]/table//table//tr[2]/td[2]//text()")
+        you_save = tree.xpath(
+            "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+            "td[2]/table//table//tr[3]/td[2]//text()")
+        cont = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+                             "td[2]/table/tbody/tr/td[2]//text()")
+        content = []
+        for i in range(0, len(cont), 3):
+            c = cont[i] + " " + cont[i+1]
+            c = c.replace('\\r\\n', ' ').replace('\\', '').replace('  ', ' ')
+            content.append(c)
+        # print(content)
+
+        saving = []
+        saving_percent = []
+        for el in you_save:
+            x = el.split()
+            saving.append(x[0])
+            saving_percent.append(x[1])
+
+        for i in range(0, len(title)):
+            jsonData = dict()
+            jsonData['title'] = title[i]
+            jsonData['list_price'] = list_price[i]
+            jsonData['price'] = price[i]
+            jsonData['saving'] = saving[i]
+            jsonData['saving_percent'] = saving_percent[i]
+            jsonData['content'] = content
+            # print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'npr':
-        print("NPR")
+        tree = html.fromstring(page)
+        cena = tree.xpath("//span[@class='cena']/text()")
+        agencija = tree.xpath("//span[@class='agencija']/text()")
+        velikost = tree.xpath("//span[@class='velikost']/text()")
+        district = tree.xpath("//span[@class='title']/text()")
+        desc = tree.xpath("//div[@class='kratek']/text()")
+        leto = tree.xpath("//span[@class='atribut leto']/strong/text()")
+        title = tree.xpath("//span[@class='vrsta']/text()")
+        slika = tree.xpath("//img[@class='lazyload']/@data-src | //img[@class=' lazyload']/@data-src | //img[@class='lazyloaded']/@data-src | //img[@class=' lazyloaded']/@data-src")
+
+        for i in range(0, len(title)):
+            jsonData = dict()
+            jsonData['cena'] = cena[i]
+            jsonData['agencija'] = agencija[i]
+            jsonData['velikost'] = velikost[i]
+            jsonData['district'] = district[i]
+            jsonData['desc'] = desc[i]
+            jsonData['leto'] = leto[i]
+            jsonData['title'] = title[i]
+            jsonData['slika'] = slika[i]
+            # print(json.dumps(jsonData, ensure_ascii=False))
+
 
 def implementationB(pages):
-
-    xpathIzrazi(pages[0], 'rtv')
-#    xpathIzrazi(pages[1], 'rtv')
-#    xpathIzrazi(pages[2], 'ovr')
-#    xpathIzrazi(pages[3], 'ovr')
-#    xpathIzrazi(pages[4], 'nep')
-#    xpathIzrazi(pages[5], 'nep')
+   xpathIzrazi(pages[0], 'rtv')
+   # xpathIzrazi(pages[1], 'rtv')
+   # xpathIzrazi(pages[2], 'ovr')
+   # xpathIzrazi(pages[3], 'ovr')
+   # xpathIzrazi(pages[4], 'npr')
+   # xpathIzrazi(pages[5], 'npr')

@@ -1,8 +1,9 @@
-import codecs
+import json
 import re
-from bs4 import BeautifulSoup
 
-path = "../WebPages/overstock.com/jewelry02.html"
+from lxml import html
+
+path = "../input-extraction/overstock.com/jewelry02.html"
 
 page = open(path, 'rb').read()
 try:
@@ -13,20 +14,36 @@ except (UnicodeDecodeError, AttributeError):
     except (UnicodeDecodeError, AttributeError):
         pass
 
-title = re.findall("PROD_ID[^>]*><b>([^<]*)</b>", page)
+tree = html.fromstring(page)
+title = tree.xpath(
+    "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/td[2]/a//text()")
+list_price = tree.xpath(
+    "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+    "td[2]/table//table//tr[1]/td[2]//text()")
+price = tree.xpath(
+    "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/td[2]/table//table//tr[2]/td[2]//text()")
+you_save = tree.xpath(
+    "//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/td[2]/table//table//tr[3]/td[2]//text()")
 
-list_price = re.findall("List Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><s>([^<]*)</s>", page)
+content = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
+                     "td[2]/table/tbody/tr/td[2]//text()")
+print(content[0])
+print(content[1])
 
-price = re.findall("Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"bigred\"><b>([^<]*)</b>", page)
-
-you_save = re.findall("You Save:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"littleorange\">([^<]*) ([^<]*)</span>", page)
 saving = []
 saving_percent = []
 for el in you_save:
-    saving.append(el[0])
-    saving_percent.append(el[1])
-print(saving)
-print(saving_percent)
+    x = el.split()
+    saving.append(x[0])
+    saving_percent.append(x[1])
 
-content = re.findall("class=\"normal\">([^<]*)<br>", page)
-print(content)
+for i in range(0, len(title)):
+    jsonData = dict()
+    jsonData['title'] = title[i]
+    jsonData['list_price'] = list_price[i]
+    jsonData['price'] = price[i]
+    jsonData['saving'] = saving[i]
+    jsonData['saving_percent'] = saving_percent[i]
+    #print(json.dumps(jsonData))
+
+"//div[@class='main-data']/span[@class='velikost']//text()"
