@@ -1,6 +1,9 @@
 import re
-
+from difflib import SequenceMatcher
 from bs4 import BeautifulSoup
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
 
 def comparePageElements(page1Elemenets, page2Elemenets, i, j):
 
@@ -41,45 +44,59 @@ def webExtraction(path1, path2):
         except (UnicodeDecodeError, AttributeError):
             pass
 
-    allElements1 = re.findall(r'<[^>]+>', page1)
-    allElements2 = re.findall(r'<[^>]+>', page2)
+    soup1 = BeautifulSoup(page1)
+    soup2 = BeautifulSoup(page2)
 
+    allElements1 = soup1.findAll(True)
+    allElements2 = soup2.findAll(True)
+
+    page1Names = []
     page1Elemenets = []
     for tag in allElements1:
-        if tag.startswith('<p') or tag.startswith('< p') \
-                or tag.startswith('<div') or tag.startswith('< div') \
-                or tag.startswith('<h1') or tag.startswith('< h1') \
-                or tag.startswith('<title') or tag.startswith('< title') \
-                or tag.startswith('<table') or tag.startswith('< table'):
+        if tag.name == 'p' or tag.name == 'div' or tag.name == 'h1' or tag.name == 'title' or tag.name == 'table':
+            page1Names.append(tag.name)
             page1Elemenets.append(tag)
 
+    page2Names = []
     page2Elemenets = []
     for tag in allElements2:
-        if tag.startswith('<p') or tag.startswith('< p') \
-                or tag.startswith('<div') or tag.startswith('< div') \
-                or tag.startswith('<h1') or tag.startswith('< h1') \
-                or tag.startswith('<title') or tag.startswith('< title') \
-                or tag.startswith('<table') or tag.startswith('< table'):
-            # page2Elemenets.append(str(tag).splitlines()[0])
-            page2Elemenets.append(tag)
+       if tag.name == 'p' or tag.name == 'div' or tag.name == 'h1' or tag.name == 'title' or tag.name == 'table':
+           page2Names.append(tag.name)
+           page2Elemenets.append(tag)
 
-    combinedElements = []
+    LayoutElements1 = []
+    LayoutElements2 = []
     j = 0
     i = 0
-    while i < len(page1Elemenets) and j < len(page2Elemenets):
-        if page1Elemenets[i] == page2Elemenets[j]:
-            combinedElements.append(page1Elemenets[i])
+    while i < len(page1Names) and j < len(page2Names):
+        if page1Names[i] == page2Names[j]:
+            LayoutElements1.append(page1Elemenets[i])
+            LayoutElements2.append(page2Elemenets[j])
             i += 1
             j += 1
             continue
 
-        k, l = comparePageElements(page1Elemenets, page2Elemenets, i, j)
+        k, l = comparePageElements(page1Names, page2Names, i, j)
         if k >= 0:
-            combinedElements.append(page1Elemenets[i])
             i = k
             j = l
+            LayoutElements1.append(page1Elemenets[i])
+            LayoutElements2.append(page2Elemenets[j])
         i += 1
         j += 1
+
+    # We have our layout pattern, now we need to take all elements with that
+    # pattern and check their similarity (difference)
+    diffElements1 = []
+    diffElements2 = []
+    for i in range(len(LayoutElements1)):
+        if similar(str(LayoutElements1[i]), str(LayoutElements2[i])) < 0.5:
+            diffElements1.append(LayoutElements1[i])
+            diffElements2.append(LayoutElements2[i])
+
+
+    # for i in combinedElements:
+    #     if similar(,"1234")
     # print(combinedElements)
     # print(page2Elemenets)
     # for i in range(10):
