@@ -74,7 +74,7 @@ def xpathIzrazi(path, pageType):
             jsonData['price'] = price[i]
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
-            jsonData['content'] = content
+            jsonData['content'] = content[i]
             print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'npr':
@@ -102,15 +102,15 @@ def xpathIzrazi(path, pageType):
 
 
 def implementationB(pages):
-    print("-------------------------  RTV 1 STRAN  --------------------------------------\n")
+    print("-------------------------  RTV SITE 1  --------------------------------------\n")
     xpathIzrazi(pages[0], 'rtv')
-    print("\n-------------------------  RTV 2 STRAN  --------------------------------------\n")
+    print("\n-------------------------  RTV SITE 2  --------------------------------------\n")
     xpathIzrazi(pages[1], 'rtv')
-    print("\n-------------------------  Overstock 1 STRAN  --------------------------------------\n")
+    print("\n-------------------------  Overstock SITE 1  --------------------------------------\n")
     xpathIzrazi(pages[2], 'ovr')
-    print("\n-------------------------  Overstock 2 STRAN  --------------------------------------\n")
+    print("\n-------------------------  Overstock SITE 2  --------------------------------------\n")
     xpathIzrazi(pages[3], 'ovr')
-    print("\n-------------------------  Nepremicnine 1 STRAN  --------------------------------------\n")
+    print("\n-------------------------  Nepremicnine SITE 1  --------------------------------------\n")
     xpathIzrazi(pages[4], 'npr')
-    print("\n-------------------------  Nepremicnine 2 STRAN  --------------------------------------\n")
+    print("\n-------------------------  Nepremicnine SITE 2  --------------------------------------\n")
     xpathIzrazi(pages[5], 'npr')
