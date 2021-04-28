@@ -54,6 +54,8 @@ def xpathIzrazi(path, pageType):
             "td[2]/table//table//tr[3]/td[2]//text()")
         cont = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
                              "td[2]/table/tbody/tr/td[2]//text()")
+
+        title = [el.replace('\\', '') for el in title]
         content = []
         for i in range(0, len(cont), 3):
             c = cont[i] + " " + cont[i+1]

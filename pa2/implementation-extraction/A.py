@@ -45,6 +45,7 @@ def regularniIzrazi(path, pageType):
 
     elif pageType == 'ovr':
         title = re.findall("PROD_ID[^>]*><b>([^<]*)</b>", page)
+        title = [el.replace('\\', '') for el in title]
         list_price = re.findall("List Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><s>([^<]*)</s>", page)
         price = re.findall("Price:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"bigred\"><b>([^<]*)</b>", page)
         you_save = re.findall("You Save:</b></td><td align=\"left\" nowrap=\"nowrap\"><span class=\"littleorange\">([^<]*) ([^<]*)</span>", page)
