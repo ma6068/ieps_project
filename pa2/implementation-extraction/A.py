@@ -94,8 +94,8 @@ def regularniIzrazi(path, pageType):
 
 def implementationA(pages):
     regularniIzrazi(pages[0], 'rtv')
-    # regularniIzrazi(pages[1], 'rtv')
-    # regularniIzrazi(pages[2], 'ovr')
-    #regularniIzrazi(pages[3], 'ovr')
-    # regularniIzrazi(pages[4], 'npr')
-    # regularniIzrazi(pages[5], 'npr')
+    regularniIzrazi(pages[1], 'rtv')
+    regularniIzrazi(pages[2], 'ovr')
+    regularniIzrazi(pages[3], 'ovr')
+    regularniIzrazi(pages[4], 'npr')
+    regularniIzrazi(pages[5], 'npr')

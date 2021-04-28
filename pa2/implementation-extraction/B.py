@@ -105,8 +105,8 @@ def xpathIzrazi(path, pageType):
 
 def implementationB(pages):
    xpathIzrazi(pages[0], 'rtv')
-   # xpathIzrazi(pages[1], 'rtv')
-   # xpathIzrazi(pages[2], 'ovr')
-   # xpathIzrazi(pages[3], 'ovr')
-   # xpathIzrazi(pages[4], 'npr')
-   # xpathIzrazi(pages[5], 'npr')
+   xpathIzrazi(pages[1], 'rtv')
+   xpathIzrazi(pages[2], 'ovr')
+   xpathIzrazi(pages[3], 'ovr')
+   xpathIzrazi(pages[4], 'npr')
+   xpathIzrazi(pages[5], 'npr')
