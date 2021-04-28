@@ -94,27 +94,12 @@ def webExtraction(path1, path2):
             diffElements1.append(LayoutElements1[i])
             diffElements2.append(LayoutElements2[i])
 
-
-    # for i in combinedElements:
-    #     if similar(,"1234")
-    # print(combinedElements)
-    # print(page2Elemenets)
-    # for i in range(10):
-    #     print(page2Elemenets[i])
-    #     print("--------------------------------------------")
+    print(diffElements1)
+    print(diffElements2)
 
 
 def implementationC(pages):
     webExtraction(pages[0], pages[1])
-#    webExtraction(pages[2], pages[3])
-#    webExtraction(pages[4], pages[5])
+    webExtraction(pages[2], pages[3])
+    webExtraction(pages[4], pages[5])
 
-#div 1
-#div 2
-#div 3
-
-#div 1
-#div 5
-#div 4
-#div 2
-#div 3

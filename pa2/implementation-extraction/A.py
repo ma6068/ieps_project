@@ -14,7 +14,6 @@ def regularniIzrazi(path, pageType):
             pass
 
     if pageType == 'rtv':
-        # Regularni izrazi
         author = re.search("<div class=\"author-name\">([^<]*)</div>", page).group(1)
         publishMeta = re.search("<div class=\"publish-meta\">\\s*([^<]*)<br>\\s*([^<]*)\\s*</div>", page)
         timePublished = publishMeta.group(1)
@@ -27,7 +26,6 @@ def regularniIzrazi(path, pageType):
         for e in content:
             c = re.sub('<figure.*?</figure>', '', e, flags=re.DOTALL)
             c = re.sub('<.*?>', '', c)
-        # print(c)
         lines = c.split("\n")
         non_empty_lines = [line for line in lines if line.strip() != ""]
         string_without_empty_lines = ""
@@ -57,7 +55,6 @@ def regularniIzrazi(path, pageType):
             saving_percent.append(el[1])
         content = re.findall("span class=\"normal\">([^<]*)<br>", page)
         content = [el.replace('\\r\\n', ' ').replace('\\', '') for el in content]
-        #print(content)
 
         for i in range(0, len(title)):
             jsonData = dict()
@@ -67,7 +64,7 @@ def regularniIzrazi(path, pageType):
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
             jsonData['content'] = content
-            # print(json.dumps(jsonData, ensure_ascii=False))
+            print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'npr':
         cena = re.findall("<span class=\"cena\">([^<]*)</span>", page)
@@ -93,9 +90,15 @@ def regularniIzrazi(path, pageType):
 
 
 def implementationA(pages):
+    print("-------------------------  RTV 1 STRAN  --------------------------------------\n")
     regularniIzrazi(pages[0], 'rtv')
-    # regularniIzrazi(pages[1], 'rtv')
-    # regularniIzrazi(pages[2], 'ovr')
-    #regularniIzrazi(pages[3], 'ovr')
-    # regularniIzrazi(pages[4], 'npr')
-    # regularniIzrazi(pages[5], 'npr')
+    print("\n-------------------------  RTV 2 STRAN  --------------------------------------\n")
+    regularniIzrazi(pages[1], 'rtv')
+    print("\n-------------------------  Overstock 1 STRAN  --------------------------------------\n")
+    regularniIzrazi(pages[2], 'ovr')
+    print("\n-------------------------  Overstock 2 STRAN  --------------------------------------\n")
+    regularniIzrazi(pages[3], 'ovr')
+    print("\n-------------------------  Nepremicnine 1 STRAN  --------------------------------------\n")
+    regularniIzrazi(pages[4], 'npr')
+    print("\n-------------------------  Nepremicnine 2 STRAN  --------------------------------------\n")
+    regularniIzrazi(pages[5], 'npr')
