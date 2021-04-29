@@ -1,0 +1,17 @@
+var OX_9846d137 = '';
+OX_9846d137 += "<"+"script src=\"//cdn.ipromcloud.com/ipromNS.js\" async defer><"+"/script><"+"img src=\"data:image/png,iprom\" style=\"display: none\" onerror=\'\n";
+OX_9846d137 += "(function(img) {\n";
+OX_9846d137 += "window.ipromNS = window.ipromNS || {adTags: []};\n";
+OX_9846d137 += "var adTagId = \"iprom_adtag_\" + Math.round(Math.random() * (new Date()).getTime());\n";
+OX_9846d137 += "var adHolder = document.createElement(\"div\"); adHolder.id = adTagId;\n";
+OX_9846d137 += "img.parentNode.insertBefore(adHolder, img);\n";
+OX_9846d137 += "ipromNS.adTags.push({\n";
+OX_9846d137 += "sitePath: [\"nepremicnine\",\"naslovnica\"],\n";
+OX_9846d137 += "zoneId: 33, cookieConsent : true,\n";
+OX_9846d137 += "containerId : adTagId,\n";
+OX_9846d137 += "adId : 744659,\n";
+OX_9846d137 += "callback : function(err, ad){}\n";
+OX_9846d137 += "});\n";
+OX_9846d137 += "})(this);\n";
+OX_9846d137 += "\'/><"+"div id=\'beacon_84b1f10e41\' style=\'position: absolute; left: 0px; top: 0px; visibility: hidden;\'><"+"img src=\'https://nepremicnine.click/www/delivery/lg.php?bannerid=3616&amp;campaignid=2013&amp;zoneid=30&amp;loc=https%3A%2F%2Fwww.nepremicnine.net%2Foglasi-prodaja%2Fljubljana-mesto%2Fhisa%2F&amp;referer=https%3A%2F%2Fwww.nepremicnine.net%2Foglasi-prodaja%2Fljubljana-mesto%2F&amp;cb=84b1f10e41\' width=\'0\' height=\'0\' alt=\'\' style=\'width: 0px; height: 0px;\' /><"+"/div>\n";
+document.write(OX_9846d137);
