@@ -50,9 +50,20 @@ class DB:
 
     def insert_posting(self, word, documentName, frequency, indexes):
         try:
-            self.cur.execute("INSERT INTO Posting(word, documentName, frequency, indexes) "
-                             "VALUES (?, ?, ?, ?)", word, documentName, frequency, indexes)
+            self.cur.execute("INSERT INTO Posting(word, documentName, frequency, indexes)"
+                             "VALUES (?, ?, ?, ?)", (word, documentName, frequency, indexes))
             self.conn.commit()
         except sqlite3.Error:
             self.conn.rollback()
 
+    # ------------------------- SELECT FUNCTIONS -------------------------
+    def get_posting(self, word, documentName):
+        try:
+            self.cur.execute("SELECT * FROM Posting WHERE word=? AND documentName=?", (word, documentName))
+            posting = self.cur.fetchone()
+            if posting:
+                return posting
+            return None
+        except sqlite3.Error:
+            self.conn.rollback()
+            return None

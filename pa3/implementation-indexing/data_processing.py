@@ -3,7 +3,6 @@ import nltk
 from bs4 import BeautifulSoup
 import stopwords
 import db
-from more_itertools import locate
 
 sites = ['e-prostor.gov.si', 'e-uprava.gov.si', 'evem.gov.si', 'podatki.gov.si']
 nltk.download('stopwords')
@@ -21,20 +20,22 @@ for site in sites:
             s.extract()
         # text = soup.body.get_text()
         text = ' '.join(soup.stripped_strings)
+
         # tokenization (we put all words/symbols in a list)
         tokenized = nltk.word_tokenize(text, language="slovene")
-        print(tokenized)
+
         for el in tokenized:
             word = el.lower()  # all words need to be with small letters
             if word not in stopwords.stop_words_slovene:
-                # add the word in table IndexWord
+                # add the word in table IndexWord (if is already added, we catch an error)
                 db.insert_index_word(word)
-                # find all indexes of a word in the text
-                indexes = [j for j, val in enumerate(tokenized) if val == el]
-                print(indexes)
-                for lala in indexes:
-                    print(tokenized[lala])
-                print("kraj")
+
+                # if word on that site is not in database => calculate indexes and frequency and insert in database
+                if db.get_posting(word, html_files[i]) is None:
+                    indexes = [str(j) for j, val in enumerate(tokenized) if val == el]
+                    indexes = ','.join(indexes)
+                    frequency = len(indexes)
+                    db.insert_posting(word, html_files[i], frequency, indexes)
         break
     break
 
