@@ -33,10 +33,7 @@ for site in sites:
                 # if word on that site is not in database => calculate indexes and frequency and insert in database
                 if db.get_posting(word, html_files[i]) is None:
                     indexes = [str(j) for j, val in enumerate(tokenized) if val == el]
-                    indexes = ','.join(indexes)
                     frequency = len(indexes)
-                    db.insert_posting(word, html_files[i], frequency, indexes)
-        break
-    break
-
+                    db.insert_posting(word, html_files[i], frequency, ','.join(indexes))
+                    # print(db.get_posting(word, html_files[i]))
 
