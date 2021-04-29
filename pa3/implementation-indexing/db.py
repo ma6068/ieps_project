@@ -39,6 +39,20 @@ class DB:
         ''')
         self.conn.commit()
 
+    # ------------------------- INSERT FUNCTIONS -------------------------
 
+    def insert_index_word(self, word):
+        try:
+            self.cur.execute("INSERT INTO IndexWord(word) VALUES (?)", (word,))
+            self.conn.commit()
+        except sqlite3.Error:
+            self.conn.rollback()
 
+    def insert_posting(self, word, documentName, frequency, indexes):
+        try:
+            self.cur.execute("INSERT INTO Posting(word, documentName, frequency, indexes) "
+                             "VALUES (?, ?, ?, ?)", word, documentName, frequency, indexes)
+            self.conn.commit()
+        except sqlite3.Error:
+            self.conn.rollback()
 
