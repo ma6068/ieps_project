@@ -1,5 +1,6 @@
 import json
 import re
+from xml.etree.ElementTree import ElementTree
 
 from lxml import etree, html
 
@@ -81,20 +82,29 @@ def xpathIzrazi(path, pageType):
 
     elif pageType == 'npr':
         tree = html.fromstring(page)
-        cena = tree.xpath("//span[@class='cena']/text()")
+        cena = tree.xpath("//span[@class='cena']/text() | //span[@class='cena' and not(text())]")
         agencija = tree.xpath("//span[@class='agencija']/text()")
-        velikost = tree.xpath("//span[@class='velikost']/text()")
+        velikost = tree.xpath("//span[@class='velikost']/text() | //span[@class='velikost' and not(text())]")
         district = tree.xpath("//span[@class='title']/text()")
         desc = tree.xpath("//div[@class='kratek']/text()")
         leto = tree.xpath("//span[@class='atribut leto']/strong/text()")
         title = tree.xpath("//span[@class='vrsta']/text()")
-        slika = tree.xpath("//img[@class='lazyload']/@data-src | //img[@class=' lazyload']/@data-src | //img[@class='lazyloaded']/@data-src | //img[@class=' lazyloaded']/@data-src")
+        slika = tree.xpath("//img[@class='lazyload']/@data-src | //img[@class=' lazyload']/@data-src "
+                           "| //img[@class='lazyloaded']/@data-src | //img[@class=' lazyloaded']/@data-src"
+                           "| //img[@class=' ls-is-cached lazyloaded']/@data-src")
+
 
         for i in range(0, len(title)):
             jsonData = dict()
-            jsonData['cena'] = cena[i]
+            if str(cena[8]).__contains__("Element span at"):
+                jsonData['cena'] = ""
+            else:
+                jsonData['cena'] = cena[i]
             jsonData['agencija'] = agencija[i]
-            jsonData['velikost'] = velikost[i]
+            if str(velikost[8]).__contains__("Element span at"):
+                jsonData['velikost'] = ""
+            else:
+                jsonData['velikost'] = velikost[i]
             jsonData['district'] = district[i]
             jsonData['desc'] = desc[i]
             jsonData['leto'] = leto[i]
