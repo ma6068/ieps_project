@@ -67,3 +67,19 @@ class DB:
         except sqlite3.Error:
             self.conn.rollback()
             return None
+
+    def get_postings_by_words(self, words):
+        try:
+            sql = "SELECT SUM(frequency) AS sum_frequency, documentName, GROUP_CONCAT(indexes) FROM Posting " \
+                  "WHERE word='" + words[0] + "' "
+            for i in range(1, len(words)):
+                sql += "OR word='" + words[i] + "' "
+            sql += "GROUP BY documentName ORDER BY sum_frequency DESC"
+            self.cur.execute(sql)
+            postings = self.cur.fetchall()
+            if postings:
+                return postings
+            return None
+        except sqlite3.Error:
+            self.conn.rollback()
+            return None
