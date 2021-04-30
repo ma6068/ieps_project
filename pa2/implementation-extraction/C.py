@@ -102,3 +102,4 @@ def implementationC(pages):
     webExtraction(pages[0], pages[1])
     webExtraction(pages[2], pages[3])
     webExtraction(pages[4], pages[5])
+

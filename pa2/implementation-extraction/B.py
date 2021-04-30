@@ -28,7 +28,6 @@ def xpathIzrazi(path, pageType):
         content = multipleContents[0]
         for i in range(1, len(multipleContents)):
             content = content + ' ' + multipleContents[i]
-        # print(content)
 
         jsonData = dict()
         jsonData['author'] = author
@@ -38,7 +37,7 @@ def xpathIzrazi(path, pageType):
         jsonData['subtitle'] = subtitle
         jsonData['lead'] = lead
         jsonData['content'] = content
-        # print(json.dumps(jsonData, ensure_ascii=False))
+        print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'ovr':
         tree = html.fromstring(page)
@@ -55,12 +54,13 @@ def xpathIzrazi(path, pageType):
             "td[2]/table//table//tr[3]/td[2]//text()")
         cont = tree.xpath("//table[2]//tr[1]/td[5]/table//tr[2]/td/table//tr/td/table//tr[@bgcolor]/"
                              "td[2]/table/tbody/tr/td[2]//text()")
+
+        title = [el.replace('\\', '') for el in title]
         content = []
         for i in range(0, len(cont), 3):
             c = cont[i] + " " + cont[i+1]
             c = c.replace('\\r\\n', ' ').replace('\\', '').replace('  ', ' ')
             content.append(c)
-        # print(content)
 
         saving = []
         saving_percent = []
@@ -76,8 +76,8 @@ def xpathIzrazi(path, pageType):
             jsonData['price'] = price[i]
             jsonData['saving'] = saving[i]
             jsonData['saving_percent'] = saving_percent[i]
-            jsonData['content'] = content
-            # print(json.dumps(jsonData, ensure_ascii=False))
+            jsonData['content'] = content[i]
+            print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'npr':
         tree = html.fromstring(page)
@@ -100,13 +100,19 @@ def xpathIzrazi(path, pageType):
             jsonData['leto'] = leto[i]
             jsonData['title'] = title[i]
             jsonData['slika'] = slika[i]
-            # print(json.dumps(jsonData, ensure_ascii=False))
+            print(json.dumps(jsonData, ensure_ascii=False))
 
 
 def implementationB(pages):
-   xpathIzrazi(pages[0], 'rtv')
-   xpathIzrazi(pages[1], 'rtv')
-   xpathIzrazi(pages[2], 'ovr')
-   xpathIzrazi(pages[3], 'ovr')
-   xpathIzrazi(pages[4], 'npr')
-   xpathIzrazi(pages[5], 'npr')
+    print("-------------------------  RTV SITE 1  --------------------------------------\n")
+    xpathIzrazi(pages[0], 'rtv')
+    print("\n-------------------------  RTV SITE 2  --------------------------------------\n")
+    xpathIzrazi(pages[1], 'rtv')
+    print("\n-------------------------  Overstock SITE 1  --------------------------------------\n")
+    xpathIzrazi(pages[2], 'ovr')
+    print("\n-------------------------  Overstock SITE 2  --------------------------------------\n")
+    xpathIzrazi(pages[3], 'ovr')
+    print("\n-------------------------  Nepremicnine SITE 1  --------------------------------------\n")
+    xpathIzrazi(pages[4], 'npr')
+    print("\n-------------------------  Nepremicnine SITE 2  --------------------------------------\n")
+    xpathIzrazi(pages[5], 'npr')
