@@ -68,14 +68,14 @@ def regularniIzrazi(path, pageType):
             print(json.dumps(jsonData, ensure_ascii=False))
 
     elif pageType == 'npr':
-        cena = re.findall("<span class=\"cena\">([^<]*)</span>", page)
+        cena = re.findall("<span class=\"cena\">([^<]*)<", page)
         agencija = re.findall("<span class=\"agencija\">([^<]*)</span>", page)
         velikost = re.findall("<span class=\"velikost\" lang=\"sl\">([^<]*)</span>", page)
         district = re.findall("<span class=\"title\">([^<]*)</span>", page)
         desc = re.findall("<div class=\"kratek\" (itemprop|itemqrop)=\"description\">([^<]*)</div>", page)
         leto = re.findall("<span class=\"atribut leto\">Leto: <strong>([^<]*)</strong></span>", page)
         title = re.findall("<span class=\"vrsta\">([^<]*)</span>", page)
-        slika = re.findall("<img class=\"(lazyload|lazyloaded| lazyload| lazyloaded)\" data-src=\"([^\"]*)\"", page)
+        slika = re.findall("<img class=\"(lazyload|lazyloaded| lazyload| lazyloaded| ls-is-cached lazyloaded)\" data-src=\"([^\"]*)\"", page)
 
         for i in range(0, len(title)):
             jsonData = dict()
