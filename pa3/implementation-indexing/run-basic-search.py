@@ -22,10 +22,9 @@ def search_all_pages(words, sites):
         for i in range(1, len(html_files)):
             text = get_html_text(url + '/' + html_files[i])
             tokenized = nltk.word_tokenize(text, language="slovene")
-            tokenized = [el.lower() for el in tokenized]
             indexes = []
             for word in words:
-                indexes += [str(j) for j, val in enumerate(tokenized) if val == word]
+                indexes += [str(j) for j, val in enumerate(tokenized) if val.lower() == word]
             frequency = len(indexes)
             if frequency == 0:
                 continue
@@ -81,5 +80,5 @@ if __name__ == "__main__":
     sites = ['e-prostor.gov.si', 'e-uprava.gov.si', 'evem.gov.si', 'podatki.gov.si']
     nltk.download('stopwords')
     nltk.download('punkt')
-    input = "trgovina"
+    input = "Sistem SPOT"
     basic_search(input, sites)
