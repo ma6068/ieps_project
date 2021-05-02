@@ -99,7 +99,10 @@ def webExtraction(path1, path2):
 
 
 def implementationC(pages):
+    print("-------------------------  RTV SITES  --------------------------------------\n")
     webExtraction(pages[0], pages[1])
+    print("-------------------------  Overstock SITES  --------------------------------------\n")
     webExtraction(pages[2], pages[3])
+    print("-------------------------  Nepremicnine SITES  --------------------------------------\n")
     webExtraction(pages[4], pages[5])
 
