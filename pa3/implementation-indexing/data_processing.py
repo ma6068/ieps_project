@@ -14,7 +14,6 @@ def processing(sites):
             soup = BeautifulSoup(html, "html.parser")
             for s in soup(["script", "style"]):
                 s.extract()
-            # text = soup.body.get_text()
             text = ' '.join(soup.stripped_strings)
 
             # tokenization (we put all words/symbols in a list)

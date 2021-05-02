@@ -20,8 +20,9 @@ def search_all_pages(words, sites):
         url = 'data/' + site
         html_files = os.listdir(url)   # put all files names in that folder in list
         for i in range(1, len(html_files)):
-            text = get_html_text(url + '/' + html_files[i]).lower()
+            text = get_html_text(url + '/' + html_files[i])
             tokenized = nltk.word_tokenize(text, language="slovene")
+            tokenized = [el.lower() for el in tokenized]
             indexes = []
             for word in words:
                 indexes += [str(j) for j, val in enumerate(tokenized) if val == word]
@@ -60,7 +61,12 @@ def basic_search(input, sites):
             snippet = ''
             for j in range(len(indexes)):
                 i = int(indexes[j])
-                snippet += tokenized[i] + " " + tokenized[i+1] + " " + tokenized[i+2] + " " + tokenized[i+3] + " ... "
+                if i + 3 < len(tokenized):
+                    snippet += tokenized[i] + " " + tokenized[i + 1] + " " + tokenized[i + 2] + " " + tokenized[i + 3] \
+                               + " ... "
+                else:
+                    snippet += "..." + tokenized[i - 3] + " " + tokenized[i - 2] + " " \
+                               + tokenized[i - 1] + " " + tokenized[i]
             spaces1 = ' ' * (12 - len(str(el[0])))
             spaces2 = ' ' * (43 - len(str(el[1])))
             print(str(el[0]) + spaces1 + el[1] + spaces2 + snippet)
@@ -75,5 +81,5 @@ if __name__ == "__main__":
     sites = ['e-prostor.gov.si', 'e-uprava.gov.si', 'evem.gov.si', 'podatki.gov.si']
     nltk.download('stopwords')
     nltk.download('punkt')
-    input = "predelovalne dejavnosti"
+    input = "trgovina"
     basic_search(input, sites)
