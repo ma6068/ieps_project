@@ -11,7 +11,6 @@ def get_html_text(url):
     soup = BeautifulSoup(html, "html.parser")
     for s in soup(["script", "style"]):
         s.extract()
-    # text = soup.body.get_text()
     text = ' '.join(soup.stripped_strings)
     return text
 
@@ -34,7 +33,7 @@ def db_search(input):
         print("----------- ------------------------------------------ "
               "----------------------------------------------------- "
               "------")
-        max_hits = 4
+        max_hits = 9
         hits = 0
         for el in postings:
             html_text = get_html_text(el[1])
@@ -63,5 +62,5 @@ if __name__ == "__main__":
     nltk.download('stopwords')
     nltk.download('punkt')
     db = db.DB()
-    db_search("trga")  # TODO: smeni da cita od argumenti
+    db_search("Sistem SPOT")  # TODO: smeni da cita od argumenti
     # db.disconnectDB()

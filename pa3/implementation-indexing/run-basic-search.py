@@ -1,6 +1,4 @@
 import os
-import re
-import sys
 import time
 import nltk
 from bs4 import BeautifulSoup
@@ -12,7 +10,6 @@ def get_html_text(url):
     soup = BeautifulSoup(html, "html.parser")
     for s in soup(["script", "style"]):
         s.extract()
-    # text = soup.body.get_text()
     text = ' '.join(soup.stripped_strings)
     return text
 
@@ -53,10 +50,11 @@ def basic_search(input, sites):
         print("----------- ------------------------------------------ "
               "-----------------------------------------------------"
               "------")
-        max_hits = 4
+        max_hits = 9
         hits = 0
+        postings = sorted(postings, key=lambda x: int(x[0]), reverse=True)
         for el in postings:
-            html_text = get_html_text(el[1])
+            html_text = get_html_text('data/' + el[1])
             tokenized = nltk.word_tokenize(html_text, language="slovene")
             indexes = el[2].split(",")
             snippet = ''
@@ -77,5 +75,5 @@ if __name__ == "__main__":
     sites = ['e-prostor.gov.si', 'e-uprava.gov.si', 'evem.gov.si', 'podatki.gov.si']
     nltk.download('stopwords')
     nltk.download('punkt')
-    input = "trga evidencah"
+    input = "predelovalne dejavnosti"
     basic_search(input, sites)
