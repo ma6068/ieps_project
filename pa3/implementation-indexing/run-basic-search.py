@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import nltk
 from bs4 import BeautifulSoup
@@ -80,5 +81,4 @@ if __name__ == "__main__":
     sites = ['e-prostor.gov.si', 'e-uprava.gov.si', 'evem.gov.si', 'podatki.gov.si']
     nltk.download('stopwords')
     nltk.download('punkt')
-    input = "Sistem SPOT"
-    basic_search(input, sites)
+    basic_search(" ".join(sys.argv[1:]), sites)

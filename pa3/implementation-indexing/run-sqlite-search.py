@@ -62,5 +62,5 @@ if __name__ == "__main__":
     nltk.download('stopwords')
     nltk.download('punkt')
     db = db.DB()
-    db_search("Sistem SPOT")  # TODO: smeni da cita od argumenti
+    db_search(" ".join(sys.argv[1:]))
     # db.disconnectDB()
